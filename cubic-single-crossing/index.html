@@ -360,14 +360,15 @@ footer { padding: 3rem 0 4rem; border-top: var(--rule); color: var(--ink-soft); 
  $$
  <p>Since $\Phi(z + \eta) = -B\,F(\eta)$ and $\Phi_y(z + \eta) = -B\,F_\eta(\eta),$ dividing by $B$ leaves $\beta\,[c(w) - c(m)] = F(s)$ and $\beta\,c'(m) = F_\eta(s).$ Divide one by the other and the share drops out; what remains is the ratio $\psi := F/F_\eta,$ which we call the <em>contact price</em>. These are the <em>contact equations</em>:</p>
  $$
- \frac{c(w) - c(m)}{c'(m)} = \psi(s),
- \qquad
- \beta = \frac{F_\eta(s)}{c'(m)} .
+ \begin{align*}
+  \frac{c(w) - c(m)}{c'(m)} &= \psi(s), \tag{CT1}\\
+  \beta &= \frac{F_\eta(s)}{c'(m)} . \tag{CT2}
+ \end{align*}
  $$
  <p>Two equations in the two unknowns, $s$ and $\beta,$ since $d - z$ is given and the margin is $m = d - z - s.$ Read the first as an accounting identity for the prize, $c(w) = c(m) + \psi(s)\,c'(m)$⁠: the whole prize is spent on the margin and on the contact price, charged at the marginal cost of the margin. These identities use the two tangencies and nothing else; in particular no derivative of any mass has been taken.</p>
 
  <h3>7.3 Moving the dial</h3>
- <p>Everything is now a function of $t,$ and this subsection finds when the share rises with it. Write $\rho := d' - z'$ for the <em>incoming difference</em>, the rate at which the new atom pulls away from the old contact, so that $m' = \rho - s'.$ A subscript $t$ is a derivative along the dial at a fixed step, as in $\psi_t := \partial\psi/\partial t$ at fixed $\eta.$ Differentiate the first contact equation. The reach is fixed, and by the equation itself the left side has $m$-derivative</p>
+ <p>Everything is now a function of $t,$ and this subsection finds when the share rises with it. Write $\rho := d' - z'$ for the <em>incoming difference</em>, the rate at which the new atom pulls away from the old contact, so that $m' = \rho - s'.$ A subscript $t$ is a derivative along the dial at a fixed step, as in $\psi_t := \partial\psi/\partial t$ at fixed $\eta.$ Differentiate the first contact equation (CT1) with respect to the dial $t.$ The reach is fixed, and by the equation itself the left side has $m$-derivative</p>
  $$
  \frac{d}{dm}\,\frac{c(w) - c(m)}{c'(m)} = -1 - \frac{c(w) - c(m)}{c'(m)}\,\frac{c''(m)}{c'(m)},
  \qquad\text{and define}\qquad
@@ -382,7 +383,7 @@ footer { padding: 3rem 0 4rem; border-top: var(--rule); color: var(--ink-soft); 
  <div class="box"><span class="tag">the one-step conclusion</span>
  If the incoming difference is positive, $\rho > 0,$ and at the step the contact price has ${0 \lt \psi_\eta \lt \lambda}$ and $\psi_t \ge 0,$ then $s' > \rho > 0$ and $m' \lt 0.$ Since $(z + s)' - d' = s' - \rho,$ <em>the new contact outruns the atom that created it, and the margin closes.</em>
  </div>
- <p>The share follows. Differentiate the second contact equation:</p>
+ <p>The share follows. Differentiate the second contact equation (CT2):</p>
  $$
  \beta' = \frac{F_{\eta\eta}(s)\,s' + F_{\eta t}(s)}{c'(m)} - \beta\,\frac{c''(m)}{c'(m)}\,m' .
  $$
@@ -500,7 +501,7 @@ footer { padding: 3rem 0 4rem; border-top: var(--rule); color: var(--ink-soft); 
 
  <h3>Three extensions, as of 27 September 2026</h3>
  <ul>
-  <li><strong>A linear term.</strong> $c(e) = e^3 + b\,e$ with $b > 0$ drops $c'(0) = 0.$ The factorization survives verbatim, since the linear term only touches coefficients the double zero already fixes; $b$ enters the margin equation, $3[w^3 - m^3 + b(w - m)] = (3m^2 + b)P,$ and the underdog’s zero-effort atom becomes a strict corner whose first contact is a <em>boundary pin</em>. Rebuilt as one node and pushed through the same recursion: <span class="lab">thm:cubicb-chain-sc</span>, at $f \ge 0.$</li>
+  <li><strong>A linear term.</strong> $c(e) = e^3 + b\,e$ with $b > 0$ drops $c'(0) = 0.$ The factorization survives verbatim, since the linear term only touches coefficients the double zero already fixes; $b$ enters the first contact equation (CT1), which becomes $3[w^3 - m^3 + b(w - m)] = (3m^2 + b)P,$ and the underdog’s zero-effort atom becomes a strict corner whose first contact is a <em>boundary pin</em>. Rebuilt as one node and pushed through the same recursion: <span class="lab">thm:cubicb-chain-sc</span>, at $f \ge 0.$</li>
   <li><strong>Negative lead.</strong> At $f \lt 0$ player 1’s prefix can saturate against the underdog’s zero atom, and the raw cubic acquires a zero-extension remainder. The reduced state past the saturated atom is still exact, and when player 1 values at least as much as player 2 the crossing step’s new mass still rises: <span class="lab">thm:cubic-chain-sc-fneg</span>. The case $v_1 \lt v_2$ at $f \lt 0$ is open.</li>
   <li><strong>Pure powers.</strong> For $c = e^\theta$ with $\theta$ not an integer there is no finite state: the hump is the state, and the next contact reads only its value and slope at one point. The honest target is a dial-monotonicity of the normalized hump at the contacts, with a base that is cost-general. For $\theta = n$ integer the state is $(n-2)$-dimensional and $e^4$ is the natural next rung. None of this is proved; it is what the ledger says the proof would need.</li>
  </ul>
