@@ -302,7 +302,7 @@ footer { padding: 3rem 0 4rem; border-top: var(--rule); color: var(--ink-soft); 
  <p>A rung closes when the last tooth takes <em>all</em> of the remaining budget: $\beta = 1$ at the terminal contact. That is what $G = 0$ means, and it gives the derivative of the residual for free. Differentiate $B_{\rm new} = B\,(1 - \beta)$ <em>first</em>, and impose $\beta = 1$ <em>afterwards</em>:</p>
  $$
  \begin{align*}
-  G' &= -B_{\rm new}' = B\,\beta' - (1 - \beta)\,B' \;\overset{\beta = 1}{=}\; B\,\beta' \;>\; 0 .
+  G' &= -B_{\rm new}' = B\,\beta' - (1 - \beta)\,B' \bigr|_{\beta = 1} = B\,\beta' \;>\; 0 .
   \tag{CR-7}
  \end{align*}
  $$
@@ -369,8 +369,8 @@ footer { padding: 3rem 0 4rem; border-top: var(--rule); color: var(--ink-soft); 
  <h3>7.3 Moving the dial</h3>
  <p>Everything is now a function of $t,$ and this subsection finds when the share rises with it. Write $\rho := d' - z'$ for the <em>incoming difference</em>, the rate at which the new atom pulls away from the old contact, so that $m' = \rho - s'.$ A subscript $t$ is a derivative along the dial at a fixed step, as in $\psi_t := \partial\psi/\partial t$ at fixed $\eta.$ Differentiate the first contact equation. The reach is fixed, and by the equation itself the left side has $m$-derivative</p>
  $$
- \frac{d}{dm}\,\frac{c(w) - c(m)}{c'(m)} = -1 - \frac{c(w) - c(m)}{c'(m)}\,\frac{c''(m)}{c'(m)} = -\lambda,
- \qquad
+ \frac{d}{dm}\,\frac{c(w) - c(m)}{c'(m)} = -1 - \frac{c(w) - c(m)}{c'(m)}\,\frac{c''(m)}{c'(m)},
+ \qquad\text{and define}\qquad
  \lambda := 1 + \psi(s)\,\frac{c''(m)}{c'(m)} .
  $$
  <p>So $-\lambda\,m' = \psi_\eta\,s' + \psi_t,$ and substituting $m' = \rho - s'$⁠:</p>
