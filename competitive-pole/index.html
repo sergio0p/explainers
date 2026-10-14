@@ -1,0 +1,2192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Competitive Equilibrium</title>
+<meta name="description" content="A companion to the paper's competitive equilibrium: the integral equation it solves, when that equation coincides with an ODE, and how the ranked equilibria converge to it.">
+<meta name="theme-color" content="#171310">
+
+<link rel="stylesheet" href="vendor/katex/katex.min.css">
+<style>
+/* ==========================================================================
+   The Competitive Equilibrium — a companion to §4.2 of the paper.
+   Palette: Attic red-figure, from the ECON 416 theme (the Siren Vase).
+   Type: Monoflow throughout, one weight. No bold, no italic: emphasis is
+   background tint, and font-synthesis is off so nothing gets faked.
+   ========================================================================== */
+
+@font-face {
+  font-family: 'Monoflow';
+  src: url('assets/monoflow-regular-webfont.woff2') format('woff2');
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+
+:root {
+  --attic-black:    #171310;
+  --soot:           #2B211B;
+  --terracotta:     #B55232;
+  --clay-highlight: #D07852;
+  --deep-oxide:     #71311F;
+  --ancient-cream:  #E6D1AD;
+  --text-muted:     #B79D82;
+
+  --background: var(--attic-black);
+  --surface:    var(--soot);
+  --primary:    var(--terracotta);
+  --accent:     var(--clay-highlight);
+  --border:     var(--deep-oxide);
+  --text:       var(--ancient-cream);
+
+  --tint-soft:  rgba(230, 209, 173, 0.10);
+  --tint-key:   rgba(208, 120, 82, 0.22);
+  --tint-warn:  rgba(113, 49, 31, 0.55);
+  --tint-flash: rgba(208, 120, 82, 0.42);
+
+  --font: 'Monoflow', ui-monospace, 'SF Mono', Menlo, monospace;
+  --measure: min(66ch, 100%);
+  --rule: 1px solid var(--border);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; scroll-padding-top: 5.5rem; -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0; overflow-x: hidden;
+  background: var(--background); color: var(--text);
+  font-family: var(--font); font-weight: 400; font-style: normal;
+  font-synthesis: none;
+  font-size: 16px; line-height: 1.8; letter-spacing: -0.005em;
+  -webkit-font-smoothing: antialiased;
+}
+@media (max-width: 30rem) { body { font-size: 14.5px; line-height: 1.75; } }
+@media (min-width: 46rem) { body { font-size: 16.5px; } }
+
+/* ---------- spine ---------- */
+.wrap { width: 100%; max-width: min(78rem, 100%); margin: 0 auto; padding: 0 16px; }
+.col  { max-width: var(--measure); margin-left: 0; }
+@media (min-width: 62rem) { .wrap { padding: 0 3rem; } .col { margin-left: 6rem; } }
+p, ul, ol, dl { max-width: var(--measure); }
+
+/* ---------- hero ---------- */
+.hero { padding: 5rem 0 3rem; border-bottom: var(--rule); }
+.hero .col { max-width: min(72ch, 100%); }
+.hero-kicker { color: var(--text-muted); font-size: 0.78rem; margin: 0 0 2.2rem; }
+.hero h1 {
+  font-weight: 400;
+  font-size: clamp(1.5rem, 6.2vw, 3.3rem);
+  line-height: 1.14; letter-spacing: -0.03em; margin: 0 0 1.4rem;
+  overflow-wrap: break-word;
+}
+.hero h1 .glyph { color: var(--accent); }
+.standfirst {
+  font-size: 1.02rem; line-height: 1.75; color: var(--text-muted);
+  margin: 0 0 2rem; max-width: min(62ch, 100%);
+}
+.hero-eq {
+  margin: 2.6rem 0 0; padding: 1.6rem 1.2rem;
+  background: var(--surface); border-left: 3px solid var(--primary); overflow-x: auto;
+}
+.hero-eq .cap { display: block; margin-top: 1rem; font-size: 0.76rem; color: var(--text-muted); line-height: 1.65; }
+
+/* ---------- the comb rule ---------- */
+.combrule { width: 100%; height: 18px; display: block; overflow: visible; }
+
+/* ---------- contents ---------- */
+.toc { padding: 3rem 0; border-bottom: var(--rule); }
+.toc h2 { font-weight: 400; font-size: 0.82rem; color: var(--text-muted); letter-spacing: 0.06em; margin: 0 0 1.4rem; }
+.toc ol { list-style: none; padding: 0; margin: 0; max-width: min(62ch, 100%); column-gap: 3rem; }
+@media (min-width: 62rem) { .toc ol { columns: 2; max-width: min(74ch, 100%); } }
+.toc li { margin: 0 0 0.35rem; break-inside: avoid; display: flex; gap: 0.8rem; align-items: baseline; }
+.toc .n { color: var(--primary); font-size: 0.82rem; min-width: 1.6rem; }
+.toc a { color: var(--text); text-decoration: none; font-size: 0.9rem; }
+.toc a:hover { background: var(--tint-soft); }
+
+/* ---------- sections ---------- */
+section.chapter { padding: 3.4rem 0 1rem; }
+.chapter h2 {
+  position: relative; font-weight: 400;
+  font-size: clamp(1.18rem, 3.4vw, 1.85rem);
+  line-height: 1.28; letter-spacing: -0.025em; margin: 0 0 1.6rem;
+  max-width: min(52ch, 100%); overflow-wrap: break-word;
+}
+.chapter h2 .secno { display: block; color: var(--primary); font-size: 0.8rem; letter-spacing: 0.06em; margin-bottom: 0.5rem; }
+@media (min-width: 62rem) {
+  .chapter h2 .secno { position: absolute; left: -6rem; top: 0.55rem; margin: 0; width: 4.4rem; text-align: right; }
+}
+h3 { font-weight: 400; font-size: 1.02rem; color: var(--accent); margin: 2.6rem 0 0.9rem; max-width: min(54ch, 100%); }
+p { margin: 0 0 1.15rem; }
+ul, ol { padding-left: 1.4rem; margin: 0 0 1.25rem; }
+li { margin-bottom: 0.55rem; }
+li::marker { color: var(--primary); }
+a { color: var(--accent); text-underline-offset: 0.2em; }
+a:hover { background: var(--tint-soft); }
+
+/* ---------- emphasis by tint ---------- */
+.em, .key, .warnword {
+  padding: 0.08em 0.3em; margin: 0 -0.05em; border-radius: 0;
+  box-decoration-break: clone; -webkit-box-decoration-break: clone;
+}
+.em { background: var(--tint-soft); }
+.key { background: var(--tint-key); }
+.warnword { background: var(--tint-warn); }
+
+a.term {
+  color: var(--text); background: var(--tint-key); text-decoration: none;
+  border-bottom: 1px dotted var(--accent); padding: 0.08em 0.3em; cursor: pointer;
+  box-decoration-break: clone; -webkit-box-decoration-break: clone;
+}
+a.term:hover { background: var(--accent); color: var(--attic-black); border-bottom-color: transparent; }
+
+code.label {
+  background: var(--surface); color: var(--text-muted);
+  padding: 0.06em 0.34em; font-size: 0.86em; border-bottom: 1px solid var(--border);
+}
+
+/* ---------- panels ---------- */
+.panel {
+  background: var(--surface); border-left: 3px solid var(--border);
+  padding: 1.3rem 1.3rem 0.6rem; margin: 2rem 0; max-width: var(--measure);
+}
+.panel .ptitle { color: var(--accent); font-size: 0.78rem; letter-spacing: 0.05em; margin: 0 0 0.85rem; }
+.panel.trap { border-left-color: var(--primary); }
+.panel.trap .ptitle { color: var(--primary); }
+.panel p:last-child { margin-bottom: 1rem; }
+
+.eq { margin: 1.7rem 0; padding: 0.3rem 0; overflow-x: auto; overflow-y: hidden; max-width: var(--measure); }
+.eq.tagged { position: relative; padding-right: 3.5rem; }
+.eq.tagged .eqbody { display: block; }
+.eq .tag { position: absolute; right: 0; top: 50%; transform: translateY(-50%); color: var(--primary); font-size: 0.78rem; }
+.katex { font-size: 1.04em; }
+.katex-display { margin: 0; }
+
+/* ---------- figures ---------- */
+figure { margin: 2.6rem 0; max-width: 100%; }
+@media (min-width: 62rem) { figure { max-width: min(52rem, 100%); } }
+.figbox { background: var(--surface); border: var(--rule); padding: 1.2rem 1rem 0.8rem; }
+figcaption { font-size: 0.8rem; line-height: 1.7; color: var(--text-muted); margin-top: 0.9rem; max-width: min(64ch, 100%); }
+figcaption .fignum { color: var(--primary); }
+
+.controls { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; margin: 0.9rem 0 0.2rem; font-size: 0.8rem; color: var(--text-muted); }
+.controls button {
+  font-family: var(--font); font-size: 0.8rem; font-weight: 400; color: var(--text-muted);
+  background: transparent; border: 1px solid var(--border); padding: 0.28rem 0.7rem; cursor: pointer; border-radius: 0;
+}
+.controls button:hover { color: var(--text); border-color: var(--accent); }
+.controls button[aria-pressed="true"] { background: var(--primary); border-color: var(--primary); color: var(--attic-black); }
+.controls .lab { margin-right: 0.3rem; }
+.readout { font-size: 0.78rem; color: var(--text-muted); margin-top: 0.7rem; line-height: 1.8; }
+.readout b { font-weight: 400; background: var(--tint-soft); padding: 0.05em 0.3em; }
+
+/* ---------- tables ---------- */
+.tablewrap { overflow-x: auto; margin: 2rem 0; max-width: min(52rem, 100%); }
+table { border-collapse: collapse; font-size: 0.82rem; width: 100%; }
+th, td { text-align: left; padding: 0.5rem 0.9rem 0.5rem 0; border-bottom: 1px solid rgba(113,49,31,0.5); vertical-align: top; }
+th { color: var(--accent); font-weight: 400; white-space: nowrap; }
+td .st { padding: 0.05em 0.4em; }
+.st-proved { background: rgba(208,120,82,0.28); }
+.st-cond   { background: var(--tint-soft); }
+.st-open   { color: var(--text-muted); border-bottom: 1px dotted var(--border); }
+
+/* ---------- appendix ---------- */
+#appendix { padding-top: 3rem; }
+@media (min-width: 62rem) { #entries { margin-left: 6rem; } }
+.entry {
+  background: var(--surface); border-left: 3px solid var(--primary);
+  padding: 1.3rem 1rem 0.9rem; margin: 0 0 1.6rem;
+  max-width: min(47rem, 100%); scroll-margin-top: 6rem;
+}
+@media (min-width: 46rem) { .entry { padding: 1.4rem 1.6rem 1rem; } }
+.entry > h3 { margin-top: 0; color: var(--text); font-size: 1.05rem; }
+.entry .eq, .entry p, .entry ul { max-width: min(60ch, 100%); }
+.entry-foot {
+  display: flex; flex-wrap: wrap; gap: 0.8rem 1.4rem; align-items: baseline;
+  margin-top: 1rem; padding-top: 0.8rem; border-top: 1px solid var(--border);
+  font-size: 0.76rem; color: var(--text-muted);
+}
+.usedin a { color: var(--text-muted); text-decoration: none; border-bottom: 1px dotted var(--border); }
+.usedin a:hover { color: var(--text); }
+
+button.backbtn {
+  font-family: var(--font); font-size: 0.76rem; font-weight: 400;
+  color: var(--attic-black); background: var(--accent); border: none;
+  padding: 0.3rem 0.8rem; cursor: pointer; border-radius: 0;
+}
+button.backbtn:hover { background: var(--text); }
+button.backbtn[hidden] { display: none; }
+
+#returnbar {
+  position: fixed; left: 50%; transform: translateX(-50%) translateY(140%); bottom: 1.1rem; z-index: 60;
+  background: var(--accent); color: var(--attic-black); border: none;
+  font-family: var(--font); font-size: 0.82rem; font-weight: 400;
+  padding: 0.55rem 1.1rem; cursor: pointer; transition: transform 180ms ease;
+  box-shadow: 0 0 0 1px var(--attic-black); max-width: calc(100vw - 2rem); border-radius: 0;
+}
+#returnbar.show { transform: translateX(-50%) translateY(0); }
+#returnbar:hover { background: var(--text); }
+
+.flash { animation: flashbg 1500ms ease-out 1; }
+@keyframes flashbg { 0%,30% { background: var(--tint-flash); } 100% { background: var(--tint-key); } }
+
+/* ---------- chrome ---------- */
+#topbar {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 50;
+  background: rgba(23,19,16,0.94); backdrop-filter: blur(6px);
+  border-bottom: var(--rule); transform: translateY(-100%); transition: transform 180ms ease;
+}
+#topbar.show { transform: translateY(0); }
+#topbar .inner {
+  max-width: 78rem; margin: 0 auto; padding: 0.55rem 16px;
+  display: flex; gap: 1rem; align-items: baseline; justify-content: space-between;
+  font-size: 0.78rem; color: var(--text-muted);
+}
+@media (min-width: 62rem) { #topbar .inner { padding: 0.55rem 3rem; } }
+#topbar .where { color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#topbar a { color: var(--text-muted); text-decoration: none; }
+#topbar a:hover { color: var(--text); }
+#progress { position: absolute; left: 0; bottom: -1px; height: 1px; background: var(--primary); width: 0%; }
+
+footer { border-top: var(--rule); margin-top: 4rem; padding: 2.4rem 0 4rem; font-size: 0.78rem; color: var(--text-muted); }
+footer p { max-width: min(64ch, 100%); }
+
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; }
+}
+@media print { #topbar, #returnbar, .controls { display: none; } body { background:#fff; color:#000; } }
+</style>
+</head>
+<body>
+
+<div id="topbar">
+  <div class="inner">
+    <span class="where" id="whereami">The Competitive Equilibrium</span>
+    <a href="#contents">Contents</a>
+  </div>
+  <div id="progress"></div>
+</div>
+
+<!-- ================================================================== -->
+<header class="hero">
+  <div class="wrap"><div class="col">
+    <p class="hero-kicker">A companion to the paper's §4.2</p>
+    <h1>The competitive equilibrium, and the ladder that reaches&nbsp;it<span class="glyph">.</span></h1>
+    <p class="standfirst">
+      The penultimate round of the contest has many equilibria. At one end sits tacit
+      collusion; at the other, a single distribution under which both contestants earn nothing
+      at all. The paper writes that far one down in closed form for integer power costs. This
+      note explains what it is, shows the one equation it solves for <span class="em">any</span>
+      convex cost, shows exactly why the closed form exists only at integer powers, and works
+      out the sense in which the ranked equilibria in between converge to it.
+    </p>
+
+    <div class="hero-eq">
+      <div class="eq" id="heroeq"></div>
+      <span class="cap">
+        The equation. Imposed at every effort level it gives the competitive equilibrium;
+        imposed at finitely many, it gives the ranked equilibria. That sentence is what this
+        note unpacks.
+      </span>
+    </div>
+  </div></div>
+</header>
+
+<svg class="combrule" data-comb aria-hidden="true"></svg>
+
+<nav class="toc" id="contents">
+  <div class="wrap"><div class="col">
+    <h2>Contents</h2>
+    <ol id="toclist"></ol>
+  </div></div>
+</nav>
+
+<main>
+
+<!-- ================================================================== -->
+<section class="chapter" id="s1">
+<div class="wrap"><div class="col">
+<h2><span class="secno">1</span>The contest, and what the last round is worth</h2>
+
+<p>
+Two contestants meet over several rounds. In each round they simultaneously add effort,
+having seen everything spent so far; at the end the larger accumulated total takes the prize.
+Contestant <span class="em">i</span> values it at <span id="m-vi"></span>, each unit of effort
+costs <span id="m-ce"></span>, and the cost is strictly convex with <span id="m-c0"></span>.
+Convexity is the engine: it makes spreading effort across rounds better than dumping it into
+one, which is what makes the round before last worth studying at all.
+</p>
+
+<p>
+Contestant <span class="em">i</span>'s <a class="term" href="#a-reach">reach</a>
+<span id="m-reachdef"></span> is the effort whose cost exactly exhausts the prize — a ceiling
+nobody ever passes. Write <span id="m-Delta"></span> for contestant&nbsp;1's lead going into a
+round. Everything here sits in the <a class="term" href="#a-competitive">competitive range</a>,
+where neither contestant holds an overwhelming lead.
+</p>
+
+<p>
+The final round is a static contest with head starts, and it is solved. What it hands back to
+the round before is a <a class="term" href="#a-continuation">continuation value</a>: enter the
+last round with contestant&nbsp;1 holding lead <span id="m-d"></span>, and she is worth
+</p>
+
+<div class="eq tagged" id="e-power"><span class="tag">(U)</span></div>
+
+<p>
+Zero while she is the marginal player, the prize net of the cost of her margin across the
+competitive middle, and the whole prize once she is past her rival's reach. The three branches
+agree at both junctions, so <span id="m-U1"></span> is <span class="key">continuous</span>. At
+the upper junction it is even smooth, because <span id="m-cp0"></span>. At the lower one,
+<span id="m-djunc"></span>, where favourite and marginal player exchange roles, it is
+<span class="key">kinked</span> — and that kink is the subject of section&nbsp;2.
+</p>
+
+<p>
+The penultimate round is now a static game: contestant&nbsp;1 choosing <span id="m-e1"></span>
+against <span id="m-e2"></span> earns
+</p>
+
+<div class="eq" id="e-static"></div>
+
+<p>
+Note what this is <span class="em">not</span>. The rival's effort does not reach you only
+through a probability of winning; it reaches you directly, through the lead
+<span id="m-leadcarry"></span> you carry forward. Crossing a threshold here moves your payoff
+<span class="key">continuously</span> — it is in the final round, not this one, that overtaking
+turns a loss into a win and makes the payoff jump. So this is not an all-pay auction, and no
+argument in this note turns on shading a rival by a hair or on a tie-breaking rule.
+</p>
+
+</div></div>
+</section>
+
+<svg class="combrule" data-comb aria-hidden="true"></svg>
+
+<!-- ================================================================== -->
+<section class="chapter" id="s2">
+<div class="wrap"><div class="col">
+<h2><span class="secno">2</span>The kink, and why one game has many equilibria</h2>
+
+<p>
+Fix the rival's effort and watch your own payoff as your effort rises. It has two regimes,
+divided by the junction where you stop being the marginal player and become the favourite.
+</p>
+
+<ul>
+  <li><span class="key">Behind.</span> While the lead you would carry forward stays below the
+      junction, the continuation value is zero, so your payoff is just
+      <span id="m-mce1"></span>. Strictly concave, falling, best at zero: effort is pure
+      waste.</li>
+  <li><span class="key">Leading.</span> Past the junction your payoff is
+      <span id="m-ahead"></span>. Also strictly concave — the first cost term has an argument
+      that falls linearly in your effort, and a convex function of a linear argument, negated,
+      is concave; the second is strictly concave outright.</li>
+</ul>
+
+<p>
+Two strictly concave pieces meeting continuously. But the left piece is falling as it arrives
+and the right piece climbs away, so the join is an <span class="key">upward kink</span> and
+the payoff is <span class="warnword">not concave overall</span>. A function like that has
+<span class="em">two</span> local maxima: zero effort, and an interior peak out on the leading
+branch.
+</p>
+
+<div class="panel">
+  <p class="ptitle">This is the source of everything in this note</p>
+  <p>
+    Nothing else is needed. Which of the two peaks is higher depends on what the rival does, so
+    as her effort varies the ranking of your two candidates flips; at the crossover you are
+    indifferent between two efforts that are far apart, and indifference between distant
+    efforts is what a mixed equilibrium is built out of. The same kink, sitting at a rival's
+    atom instead of at the junction, is what forces the supports to interleave in
+    section&nbsp;4. One feature of the payoff, two consequences.
+  </p>
+</div>
+
+<figure id="fig1">
+  <div class="figbox">
+    <div id="fig1svg"></div>
+    <div class="controls" role="group" aria-label="choose the rival's effort">
+      <span class="lab">rival plays</span>
+      <button type="button" data-e2="0.15">0.15</button>
+      <button type="button" data-e2="0.30">0.30</button>
+      <button type="button" data-e2="0.41421356">√2−1</button>
+      <button type="button" data-e2="0.55">0.55</button>
+      <button type="button" data-e2="0.75">0.75</button>
+    </div>
+    <div class="readout" id="fig1readout"></div>
+  </div>
+  <figcaption>
+    <span class="fignum">Figure 1.</span>
+    Your payoff against your own effort, at <span class="fnmath" data-tex="c(e)=e^2"></span>,
+    <span class="fnmath" data-tex="v_1=v_2=1"></span>,
+    <span class="fnmath" data-tex="\Delta=0"></span>. The dashed line is the junction, where
+    you stop being the marginal player. Left of it the payoff is
+    <span class="fnmath" data-tex="-c(e_1)"></span>; right of it it climbs, peaks and falls.
+    Both pieces are strictly concave; the join is not. The two circles are the two local
+    maxima, the filled one the better. As the rival's effort rises the interior peak sinks,
+    and at exactly <span class="fnmath" data-tex="e_2=\sqrt2-1"></span> it is worth precisely
+    zero: the two peaks tie, and beyond that the better reply is no effort at all. The switch
+    is a consequence of the kink, not a separate ingredient.
+  </figcaption>
+</figure>
+
+<h3>Two polar equilibria, and a ladder between them</h3>
+
+<p>
+What the kink produces is an equilibrium set with two poles and a ladder joining them.
+</p>
+
+<ul>
+  <li>At one end, <a class="term" href="#a-collusive">collusive</a> equilibria: one contestant
+      inactive, the other taking the best payoff she can credibly hold. These are in
+      <span class="em">pure</span> strategies, and rent dissipation is minimal.</li>
+  <li>At the other, the <a class="term" href="#a-pole">competitive</a> equilibrium: both
+      contestants draw effort from a continuous distribution and both earn exactly zero. As in
+      Bertrand competition, rent dissipation is total.</li>
+  <li>In between, the <span class="key">ranked equilibria</span>: mixed, with finite support,
+      the two supports never overlapping and always interleaving. The more effort levels in
+      play, the lower the payoffs.</li>
+</ul>
+
+<p>
+Write <span id="m-sigmn"></span> for a ranked equilibrium in which the contestants use
+<span id="m-m"></span> and <span id="m-n"></span> effort levels and the second earns zero. The
+paper tabulates these for quadratic costs, and the ladder descends steadily toward the
+competitive value of zero.
+</p>
+
+<figure id="fig2">
+  <div class="figbox">
+    <div id="fig2svg"></div>
+    <div class="readout" id="fig2readout"></div>
+  </div>
+  <figcaption>
+    <span class="fignum">Figure 2.</span>
+    The ranked equilibria at <span class="fnmath" data-tex="c(e)=e^2"></span>,
+    <span class="fnmath" data-tex="v=1"></span>,
+    <span class="fnmath" data-tex="\Delta=0"></span>: contestant 1's payoff along the ladder,
+    computed here from the recursion of section&nbsp;4 rather than quoted. The filled marks
+    are the nine rungs the paper's table lists.
+    <span class="fnmath" data-tex="\sigma(1,1)"></span> is collusion, worth half the prize;
+    from there the payoff falls toward zero, which is the competitive value. The rest of this
+    note is about that limit and how it is reached.
+  </figcaption>
+</figure>
+
+</div></div>
+</section>
+
+<svg class="combrule" data-comb aria-hidden="true"></svg>
+
+<!-- ================================================================== -->
+<section class="chapter" id="s3">
+<div class="wrap"><div class="col">
+<h2><span class="secno">3</span>What the competitive equilibrium is</h2>
+
+<p>
+Take the symmetric case: equal values <span id="m-vv"></span> and no lead,
+<span id="m-D0"></span>, so both contestants share one reach <span id="m-w"></span>. This is
+where the competitive equilibrium lives, and not merely for convenience: at general convex
+cost an equilibrium in which both contestants randomize continuously requires the reaches to
+be aligned, and off the symmetric point they are not.
+</p>
+
+<p>
+We are after a pair of <a class="term" href="#a-atomless">atomless</a> distributions — no
+<a class="term" href="#a-atom">atom</a> anywhere, so every single effort level has probability
+zero — under which both contestants earn nothing. The paper gives it in closed form for a
+power cost <span id="m-cpow"></span> with <span id="m-thint"></span> an integer: the
+<a class="term" href="#a-cdf">distribution function</a> is a sum of exponentials,
+</p>
+
+<div class="eq" id="e-papercomp"></div>
+
+<p>
+and the two smallest cases are worth carrying in your head, because everything later gets
+checked against them:
+</p>
+
+<div class="eq" id="e-twoexamples"></div>
+
+<p>
+Both have the same shape — a curve rising from zero, cut off flat where it reaches probability
+one. Below the cut-off the contestants randomize; above it they never go.
+</p>
+
+<div class="panel trap">
+  <p class="ptitle">Three questions the closed form leaves open</p>
+  <p>
+    <span class="em">Why exponentials?</span> Sums of exponentials are what solutions of linear
+    constant-coefficient differential equations look like. Where does a differential equation
+    come from here, and what happens when the cost is not a power?
+  </p>
+  <p>
+    <span class="em">Why only integer powers?</span> The proposition says integer, and that is
+    not a convenience: section&nbsp;7 shows the restriction is exactly right.
+  </p>
+  <p>
+    <span class="em">In what sense is it a limit?</span> The ranked equilibria of figure 2 march
+    toward zero rent. Do their distributions actually converge to this one, and how fast?
+  </p>
+  <p>
+    Sections 4 to 8 answer all three, and they answer them with a single object.
+  </p>
+</div>
+
+</div></div>
+</section>
+
+<svg class="combrule" data-comb aria-hidden="true"></svg>
+
+<!-- ================================================================== -->
+<section class="chapter" id="s4">
+<div class="wrap"><div class="col">
+<h2><span class="secno">4</span>The ranked equilibria: combs, and the march that builds them</h2>
+
+<p>
+Before the limit, the things approaching it. Write contestant&nbsp;1's effort levels as
+<span id="m-xk"></span> and contestant&nbsp;2's as <span id="m-yk"></span>. In any
+finite-support equilibrium they strictly alternate, starting from contestant&nbsp;2:
+</p>
+
+<div class="eq" id="e-interleave"></div>
+
+<p>
+Hence the name: two <span class="key">combs</span> pushed together, teeth meshing.
+</p>
+
+<h3>Why they interleave — the kink again</h3>
+
+<p>
+On any interval carrying none of her rival's atoms, a contestant's payoff is
+<span class="key">strictly concave</span>, for exactly the reason section&nbsp;2 gave. A
+strictly concave function has at most one maximizer; every effort she actually plays must be a
+maximizer; so <span class="key">at most one of her atoms fits in any such gap</span>. What
+breaks the concavity, and so creates the gaps, is a rival atom. The value of overtaking one
+sitting at <span id="m-Yl"></span> is
+</p>
+
+<div class="eq tagged" id="e-signpattern"><span class="tag">(K)</span></div>
+
+<p>
+negative below it, exactly zero at it, positive and rising above it — overtaking by nothing is
+worth nothing. That is the kink of section&nbsp;2 again, now sitting at each rival atom
+instead of at the junction.
+</p>
+
+<p>
+Interleaving follows in a line. Two atoms of the same contestant adjacent in the merged order
+would both sit inside one gap of the other's support, and a gap admits at most one. So the
+merged support alternates. It starts with contestant&nbsp;2, whose bottom atom overtakes
+nothing and so is worth <span id="m-mcy1"></span> to her — which can only be an equilibrium
+payoff if it is zero. <span class="em">Her earning zero is a conclusion, not a labelling
+convention.</span>
+</p>
+
+<h3>The march: one number fixes the whole comb</h3>
+
+<p>
+Now the constructive part. Fix the primitives and fix one number — the mass
+<span id="m-t"></span> that contestant&nbsp;2 puts on zero effort, called the
+<a class="term" href="#a-dial">dial</a>. Every remaining atom and mass is then forced, one at a
+time, by indifference and the first-order conditions: a step for contestant&nbsp;2, a step for
+contestant&nbsp;1, alternating. That recursion is the <a class="term" href="#a-march">march</a>,
+and it is well defined at every depth for every dial in <span id="m-tin"></span>.
+</p>
+
+<p>
+The march knows nothing about equilibrium — it runs forever, and the masses it generates keep
+accumulating past one. An equilibrium is a place to <span class="key">stop</span> it, and there
+are two ways to stop, which alternate:
+</p>
+
+<div class="eq" id="e-rungs"></div>
+
+<p>
+Each is one scalar equation in the dial. Its root is that rung's equilibrium, and the rungs
+line up in the ladder of figure 2,
+</p>
+
+<div class="eq" id="e-chain"></div>
+
+<p>
+starting at <span id="m-sq11"></span> with the dial pinned at <span id="m-t1"></span> — which
+is the collusive equilibrium, contestant&nbsp;2 asleep at zero — and running down through
+finer and finer combs.
+</p>
+
+<h3>The same march, written against the rival's distribution</h3>
+
+<p>
+Stated tooth by tooth, the march carries two conditions of different kinds at every atom: a
+first-order condition in <span id="m-cprime"></span>, and an indifference condition in
+<span id="m-cplain"></span>. Write both against the rival's
+<a class="term" href="#a-cdf">distribution function</a> rather than against her list of atoms,
+and they turn out to be one object. Nothing in what follows is special to any cost: it holds
+for <span class="key">every strictly convex cost in the class</span>, at any values and any
+lead.
+</p>
+
+<p>
+Let <span id="m-Phi2"></span> be the rival's distribution function. Then contestant&nbsp;1's
+payoff at effort <span id="m-xeff"></span> is exactly
+</p>
+
+<div class="eq tagged" id="e-payoffint"><span class="tag">(P)</span></div>
+
+<p>
+No approximation and no limit taken. <span id="m-Phi3"></span> is a staircase, and integrating
+it tooth by tooth returns the finite sum over rival atoms that the indifference condition is
+built from. Differentiating (P) gives the marginal return
+</p>
+
+<div class="eq tagged" id="e-marginal"><span class="tag">(R)</span></div>
+
+<p>
+and now <span class="key">both</span> equilibrium conditions are statements about that one
+function:
+</p>
+
+<div class="eq" id="e-tworules"></div>
+
+<p>
+The first is the first-order condition. The second is indifference — and it is nothing but the
+fundamental theorem of calculus applied to the first.
+<span class="key">Indifference is not a second kind of condition; it is the integral of the
+first one.</span> Three pieces of bookkeeping disappear with it.
+</p>
+
+<ul>
+  <li><span class="key">The truncation asymmetry goes.</span> Contestant&nbsp;1 counts rival
+      atoms at or below her effort, contestant&nbsp;2 strictly below — an easy sign to get
+      wrong. Against a distribution function it is only a matter of which one-sided limit of
+      the staircase you use, right-continuous for one contestant and left-continuous for the
+      other. Nothing to carry in an index.</li>
+  <li><span class="key">The value needs no identity of its own.</span> Contestant&nbsp;1's
+      payoff <span id="m-u1x1"></span> is read straight off (P) at her lowest atom, rather than
+      being derived separately and then fed forward.</li>
+  <li><span class="key">The top tooth stops being a special case.</span> The last own atom
+      simply has no successor to balance against. There is no half-step to run and then
+      discard.</li>
+</ul>
+
+<p>
+And the picture is one you can hold. <span id="m-Rsaw"></span> falls wherever the payoff is
+strictly concave, and jumps up by exactly <span id="m-jumpsize"></span> at each rival atom —
+that is the kink of section&nbsp;2 in derivative form. So the marginal return is a
+<span class="key">sawtooth</span>: your atoms are its zeros, and the next one sits where the
+areas cancel.
+</p>
+
+<figure id="figM">
+  <div class="figbox">
+    <div id="figMsvg"></div>
+    <div class="controls" role="group" aria-label="choose the cost exponent">
+      <span class="lab">cost exponent</span>
+      <button type="button" data-th="2">2</button>
+      <button type="button" data-th="2.5">2.5</button>
+      <button type="button" data-th="3">3</button>
+      <button type="button" data-th="4">4</button>
+    </div>
+    <div class="readout" id="figMreadout"></div>
+  </div>
+  <figcaption>
+    <span class="fignum">Figure 3.</span>
+    The marginal return <span class="fnmath" data-tex="R"></span> along contestant&nbsp;1's
+    effort on the rung <span class="fnmath" data-tex="\sigma(3,3)"></span> at
+    <span class="fnmath" data-tex="c(e)=e^{\theta}"></span>, solved in the browser from the two
+    rules alone. The circles are her own atoms, where
+    <span class="fnmath" data-tex="R"></span> vanishes; the vertical jumps sit at her
+    <span class="em">rival's</span> atoms, each of height
+    <span class="fnmath" data-tex="q_\ell\,c'(w)"></span>. Between consecutive circles the two
+    shaded lobes have equal area — that is indifference. The first lobe, from zero up to her
+    lowest atom, has no partner: its area is her equilibrium payoff
+    <span class="fnmath" data-tex="u_1"></span>. At
+    <span class="fnmath" data-tex="\theta=2"></span> every segment is straight and the lobes
+    are triangles; at every other exponent they are not, and nothing else about the picture
+    changes.
+  </figcaption>
+</figure>
+
+<p>
+Now read the two rules once more with the far pole in mind. A comb sets
+<span id="m-Rsaw2"></span> to zero at its own atoms and balances the areas in between. The
+competitive equilibrium, built in section&nbsp;6, sets it to zero
+<span class="key">everywhere</span> — and then the areas balance for free. Same function; the
+only difference is where you insist it vanish. Section&nbsp;8 turns that sentence into the
+whole story of the limit.
+</p>
+
+<div class="panel trap">
+  <p class="ptitle">What is exact here, and what is the quadratic's luck</p>
+  <p>
+    (P), (R) and the two rules are exact restatements of the comb's own equilibrium conditions
+    for every cost in the class. They add no hypothesis and lose no case.
+  </p>
+  <p>
+    What the quadratic adds is not structure but luck. With <span id="m-ccc"></span> the
+    marginal return is piecewise <span class="em">linear</span>, so the lobes are triangles,
+    the balance is a ratio of squares, and every step of the march has a closed form with no
+    root-finding at all. Set the exponent to <span id="m-thq"></span> in the figure and watch
+    the segments straighten. That is the <span class="warnword">degenerate case</span>, not the
+    general picture: at any other cost the rules are unchanged and the roots are numerical.
+  </p>
+  <p>
+    Provenance: the record banks this marginal return against a measure only for the
+    <span class="em">atomless</span> case, inside the uniqueness proof of section&nbsp;6. The
+    atomic reading above restates the comb's conditions and is checked here against the
+    quadratic's closed form and at three further exponents — exposition, not a banked result.
+  </p>
+</div>
+
+</div></div>
+</section>
+
+<svg class="combrule" data-comb aria-hidden="true"></svg>
+
+<!-- ================================================================== -->
+<section class="chapter" id="s5">
+<div class="wrap"><div class="col">
+<h2><span class="secno">5</span>The first-order conditions are an integral equation</h2>
+
+<p>
+This is the pivot, and it is one line of calculus.
+</p>
+
+<p>
+Contestant&nbsp;1 is indifferent across her support, so her payoff is flat there and its
+derivative vanishes at each of her atoms. That first-order condition is a finite sum over her
+rival's atoms below the point:
+</p>
+
+<div class="eq tagged" id="e-foc1"><span class="tag">(F)</span></div>
+
+<p>
+Apply the fundamental theorem of calculus to each term, integrating from the rival's atom up
+to the evaluation point:
+</p>
+
+<div class="eq" id="e-ftc"></div>
+
+<p>
+Multiply by <span id="m-ql"></span>, sum over <span id="m-lek"></span>, and exchange the sum
+with the integral. Inside, the sum that appears is
+</p>
+
+<div class="eq" id="e-indicator"></div>
+
+<p>
+which is precisely contestant&nbsp;2's distribution function, and the collected constant is
+that same function evaluated at <span id="m-xk3"></span>. So the first-order condition reads
+</p>
+
+<div class="eq tagged" id="e-volterra"><span class="tag">(V)</span></div>
+
+<p>
+with <span id="m-Phi"></span> standing for her distribution function and the equation holding
+at <span id="m-xxk"></span>. The same three lines applied to contestant&nbsp;2 give the
+identical equation for contestant&nbsp;1's distribution, holding at each of
+contestant&nbsp;2's atoms.
+</p>
+
+<div class="panel">
+  <p class="ptitle">What just happened</p>
+  <p>
+    A finite sum over atoms became an integral against a distribution function, with
+    <span class="key">no approximation and no limit taken</span>. Equation (V) is an exact
+    restatement of the equilibrium conditions of a comb with three teeth, or thirty. The
+    discreteness has not been removed — it has <span class="em">moved</span>, out of the
+    equation and into the set of points at which the equation is required to hold. Keep hold of
+    that sentence; section&nbsp;8 is its consequence.
+  </p>
+</div>
+
+<p>
+Equation (V) is a <a class="term" href="#a-volterra">Volterra equation of the second kind</a>:
+the unknown appears once alone and once inside an integral whose
+<span class="em">upper limit is the point of evaluation</span>. That last feature is what makes
+it friendly. Such an equation is really a forward recursion — the value at a point depends only
+on values strictly below it — so it can be built up from the left, the way one solves a
+difference equation forward in time. It has <span class="key">exactly one</span> continuous
+solution on <span id="m-0w"></span>, with no side condition and no smallness assumption on the
+kernel; call it <span id="m-Gc"></span>. The machinery is the
+<a class="term" href="#a-neumann">Neumann series</a>, which for a Volterra kernel converges
+always.
+</p>
+
+<p>
+Differentiating (V) gives the equivalent equation for the
+<a class="term" href="#a-density">density</a> <span id="m-gGp"></span> alone, which is the form
+most of the work is done in:
+</p>
+
+<div class="eq tagged" id="e-density"><span class="tag">(D)</span></div>
+
+</div></div>
+</section>
+
+<svg class="combrule" data-comb aria-hidden="true"></svg>
+
+<!-- ================================================================== -->
+<section class="chapter" id="s6">
+<div class="wrap"><div class="col">
+<h2><span class="secno">6</span>Building it, at any convex cost</h2>
+
+<p>
+We now have one canonical function <span id="m-Gc2"></span> attached to any cost in the class,
+with no power, polynomial or analyticity assumption anywhere. The claim is that the competitive
+equilibrium is that function, cut off at height one. Three short steps.
+</p>
+
+<h3>One: the solution overshoots</h3>
+
+<p>
+Integrating (D) once gives, for every <span id="m-x5"></span>,
+</p>
+
+<div class="eq tagged" id="e-P2"><span class="tag">(★)</span></div>
+
+<p>
+Put <span id="m-xw"></span>. The shift inside the integrand collapses, and (★) becomes
+</p>
+
+<div class="eq" id="e-total"></div>
+
+<p>
+Read that as an average. The density integrates against <span id="m-cpy"></span>, which is
+strictly below <span id="m-cpw"></span> everywhere on <span id="m-0wo"></span>, and yet the
+result is exactly <span id="m-cpw2"></span>. A weight strictly smaller than
+<span id="m-cpw3"></span> can only average out to <span id="m-cpw4"></span> if the total weight
+exceeds one:
+</p>
+
+<div class="eq" id="e-overshoot"></div>
+
+<p>
+So <span id="m-Gc4"></span> climbs past one <span class="key">strictly before the reach</span>.
+</p>
+
+<h3>Two: the cut-off</h3>
+
+<p>
+It is continuous, starts at zero, is strictly increasing, and ends above one — so it crosses
+one exactly once. Call the crossing <span id="m-xb"></span> and define
+</p>
+
+<div class="eq" id="e-trunc"></div>
+
+<p>
+an atomless distribution function supported on <span id="m-0xb"></span>. That is the shape of
+the paper's two examples: a rising curve, flat after a cut-off.
+</p>
+
+<div class="panel trap">
+  <p class="ptitle">A fence worth putting up</p>
+  <p>
+    <span id="m-Gc6"></span> is <span class="warnword">not itself a distribution
+    function</span> — step one says precisely that it exceeds one before the reach, which no
+    distribution function may do. The equilibrium object is the truncation, and
+    <span id="m-Gc7"></span> is its distribution function only on <span id="m-0xb2"></span>.
+    Every use of (★) above the cut-off is a use of the
+    <span class="em">solution of the integral equation</span>, never of the equilibrium law.
+  </p>
+</div>
+
+<h3>Three: it is an equilibrium, and the only continuous one</h3>
+
+<p>
+Against the truncation, a contestant's payoff is identically zero on the support and strictly
+negative above it:
+</p>
+
+<div class="eq" id="e-nash"></div>
+
+<p>
+The first half is (★) again — differentiate the payoff, watch the moving-boundary term vanish
+because <span id="m-cwv"></span> (overtaking by nothing is worth nothing, once more), and what
+is left is (★), which is zero. The second half is convexity: above the cut-off the marginal
+return is bounded by its value at the cut-off while marginal cost keeps rising.
+</p>
+
+<p>
+So the truncation is a Nash equilibrium — atomless, both payoffs zero — and it is the
+<span class="key">only</span> equilibrium in which both contestants' strategies are atomless.
+That answers the first of section&nbsp;3's questions: the competitive equilibrium exists and is
+unique for <span class="em">every</span> cost in the class, power or not. What is special about
+powers is not the equilibrium. It is the closed form.
+</p>
+
+</div></div>
+</section>
+
+<svg class="combrule" data-comb aria-hidden="true"></svg>
+
+<!-- ================================================================== -->
+<section class="chapter" id="s7">
+<div class="wrap"><div class="col">
+<h2><span class="secno">7</span>Why the closed form stops at integer powers</h2>
+
+<p>
+An integral equation is harder to work with than a differential one: no phase plane, no
+comparison theorems, rarely a closed form. So it matters where (D) collapses into an ordinary
+differential equation — and the answer is sharp.
+</p>
+
+<p>
+Take <span id="m-cpow2"></span> and normalize <span id="m-v1"></span>, so the reach is
+<span id="m-w1"></span>. Write <span id="m-beta"></span>. Equation (D) becomes
+</p>
+
+<div class="eq" id="e-powereq"></div>
+
+<p>
+Name the integrals that appear as you differentiate,
+</p>
+
+<div class="eq" id="e-Ij"></div>
+
+<p>
+Because the integrand equals <span id="m-gx"></span> at the upper limit, differentiating gives
+</p>
+
+<div class="eq" id="e-Ijrec"></div>
+
+<p>
+<span class="key">Each differentiation lowers the kernel exponent by exactly one.</span> So the
+chain walks down <span id="m-chainwalk"></span> and terminates — closing into a finite-order
+linear ODE — if and only if it can reach <span id="m-I0"></span> in finitely many steps, which
+happens exactly when
+</p>
+
+<div class="eq" id="e-integer"></div>
+
+<p>
+For non-integer <span id="m-theta"></span> there is <span class="warnword">no finite-order ODE
+at all</span>. That is the paper's integer restriction, and it is not a convenience: it is the
+exact boundary of the method.
+</p>
+
+<h3>The two you can write down</h3>
+
+<p>
+At <span id="m-th2"></span> the chain terminates at once — <span id="m-ode2"></span> with
+<span id="m-ic2"></span> — so
+</p>
+
+<div class="eq" id="e-quad"></div>
+
+<p>
+At <span id="m-th3"></span> one more differentiation is needed, giving
+<span id="m-ode3"></span> with <span id="m-ic3"></span>. Its characteristic roots are
+<span id="m-roots"></span>, a conjugate pair, hence a trigonometric solution:
+</p>
+
+<div class="eq" id="e-cubicsol"></div>
+
+<p>
+and the cut-off condition <span id="m-Geq1"></span> reduces to <span id="m-tan1"></span>,
+giving <span id="m-pi4"></span>. These are the paper's two examples, now with a reason
+attached.
+</p>
+
+<div class="panel trap">
+  <p class="ptitle">Why the list stops there</p>
+  <p>
+    At <span id="m-th4"></span> the reduction gives <span id="m-ode4"></span>, whose
+    characteristic polynomial <span id="m-charpoly"></span> has one real root near
+    <span id="m-realroot"></span> and no usable closed form. This is not bad luck: the
+    characteristic polynomial is the truncated exponential of degree
+    <span id="m-degbeta"></span>, irreducible over the rationals at every degree above two.
+    <span class="key">The cubic is the last case to expect a closed form in, not the first of a
+    family.</span>
+  </p>
+  <p>
+    The working consequence is a caution. Differential-equation technique is available on a
+    <span class="warnword">measure-zero set</span> of cost exponents, and the quadratic is its
+    nicest point. Anywhere else — including any argument that has to pass through irrational
+    exponents — only the <span class="em">operator</span> structure of the Volterra equation
+    survives: the resolvent, positivity of the kernel, and comparison by subtracting two
+    equations.
+  </p>
+</div>
+
+<figure id="fig3">
+  <div class="figbox">
+    <div id="fig3svg"></div>
+    <div class="readout" id="fig3readout"></div>
+  </div>
+  <figcaption>
+    <span class="fignum">Figure 4.</span>
+    The cut-off <span class="fnmath" data-tex="\bar x(\theta)"></span> against the cost
+    exponent at <span class="fnmath" data-tex="v=1"></span>, obtained by solving (D)
+    numerically. Only the two filled marks have names —
+    <span class="fnmath" data-tex="\ln 2"></span> and
+    <span class="fnmath" data-tex="\pi/4"></span>, the paper's examples. Everything else on the
+    curve, integer or not, is a number with no closed form; the equilibrium exists at every one
+    of them. More convex costs push the competitive distribution further up toward the reach.
+  </figcaption>
+</figure>
+
+</div></div>
+</section>
+
+<svg class="combrule" data-comb aria-hidden="true"></svg>
+
+<!-- ================================================================== -->
+<section class="chapter" id="s8">
+<div class="wrap"><div class="col">
+<h2><span class="secno">8</span>The ladder converges, and what the finite march really is</h2>
+
+<p>
+Section 3's third question. The ranked equilibria of figure 2 have rents falling to zero; do
+their <span class="em">distributions</span> converge to the competitive one?
+</p>
+
+<h3>Fine masses force a fine mesh</h3>
+
+<p>
+Subtracting the first-order condition at consecutive atoms, and using that marginal cost is
+increasing, gives in any closed rung
+</p>
+
+<div class="eq" id="e-mesh"></div>
+
+<p>
+In words: <span class="key">the comb's teeth cannot be far apart unless some tooth is
+fat</span>. So if the largest mass in a rung tends to zero, the largest gap does too — the
+<a class="term" href="#a-mesh">mesh</a> is controlled by the masses.
+</p>
+
+<h3>Subtract the two equations</h3>
+
+<p>
+The comb's distribution function satisfies (V) at the rival's atoms. The competitive
+distribution satisfies (V) everywhere, so in particular at those same atoms.
+<span class="key">Subtract them.</span> The error at a node becomes an integral of the errors
+below it, which is a discrete <a class="term" href="#a-gronwall">Grönwall inequality</a>, and
+Grönwall turns it into an explicit bound:
+</p>
+
+<div class="eq" id="e-conv"></div>
+
+<p>
+uniformly in effort, for both contestants — a bound in
+<a class="term" href="#a-kolmogorov">Kolmogorov distance</a>, which also controls convergence
+in distribution and Wasserstein-1. At <span id="m-ce2"></span> every constant is computable:
+the bound is <span id="m-Ktstar"></span>, the dial satisfies <span id="m-dialasym"></span>, and
+so the rung with <span id="m-m2"></span> teeth sits within
+<a class="term" href="#a-bigO">order <span id="m-onem"></span></a> of the competitive
+equilibrium.
+</p>
+
+<figure id="fig4">
+  <div class="figbox">
+    <div id="fig4svg"></div>
+    <div class="readout" id="fig4readout"></div>
+  </div>
+  <figcaption>
+    <span class="fignum">Figure 5.</span>
+    Distance from the rung to the competitive equilibrium at
+    <span class="fnmath" data-tex="c(e)=e^2"></span>, on log axes, against the reference slope
+    <span class="fnmath" data-tex="1/m"></span>. Both series come from the exact recursion, not
+    from the bound. They nearly coincide: the distance to the limit <span class="em">is</span>
+    the dial, to within a fraction of a percent, so the effective constant is about one where
+    the proved constant is <span class="fnmath" data-tex="2e^3+e<43"></span> — generous by two
+    orders of magnitude, which matters at the end of this section.
+  </figcaption>
+</figure>
+
+<h3>The relation between the two objects</h3>
+
+<p>
+Now put the two facts from section&nbsp;5 side by side.
+</p>
+
+<ul>
+  <li>The competitive equilibrium satisfies the Volterra identity (V) at
+      <span class="key">every point</span>.</li>
+  <li>A ranked equilibrium satisfies the <span class="em">same</span> identity (V) at
+      <span class="key">its own atoms only</span>, with the leftover closure mass parked on the
+      top atom, above every point at which the identity is checked.</li>
+</ul>
+
+<p>
+Those two lines are about <span class="em">one function</span>, and section&nbsp;5 already named it.
+Write the amount by which&nbsp;(V) fails at a point &mdash; its left side minus its right side &mdash;
+as the <span class="key">residual</span>:
+</p>
+
+<div class="eq tagged" id="e-residual"><span class="tag">(&#8475;)</span></div>
+
+<p>
+That last equality is not an approximation. The residual <span class="em">is</span> the marginal
+return of section&nbsp;5, for a staircase and for a density alike: the sawtooth of figure&nbsp;3 and
+the Volterra equation of section&nbsp;6 are one object drawn twice. So the competitive equilibrium is
+the statement that the residual vanishes identically, and the two rules that generate a rung are two
+statements about that same residual:
+</p>
+
+<div class="eq tagged" id="e-marchres"><span class="tag">(M)</span></div>
+
+<p>
+Two equations at each tooth, for the two unknowns that tooth introduces: where the atom sits, and how
+much mass it carries. The competitive equilibrium satisfies both for free, because a function that
+vanishes everywhere vanishes at any node and has zero mean on any cell.
+</p>
+
+<div class="panel">
+  <p class="ptitle">The statement</p>
+  <p>
+    <span class="key">The march is the Volterra equation solved by marching.</span> The whole
+    algorithm is (&#8475;) driven to a zero and a zero mean on each successive cell, and the ranked
+    equilibria are exactly its solutions. Same equation as the competitive equilibrium, weaker
+    demand: vanishing at finitely many points and on average in between, rather than everywhere.
+    They are not approximations of the competitive equilibrium in any loose sense &mdash; each is an
+    exact solution of an exactly posed finite problem.
+  </p>
+</div>
+
+<p>
+And this is where the word <span class="em">Volterra</span> earns its keep. The kernel integrates
+over <span class="fnmath" data-tex="[0,x]"></span>, not over the whole interval, so the residual at
+<span class="fnmath" data-tex="x"></span> depends on the distribution only
+<span class="key">below</span> <span class="fnmath" data-tex="x"></span>. The two conditions at the
+k-th tooth therefore involve only atoms and masses that are already fixed. The system is triangular;
+the march is forward substitution on it, one atom-and-mass pair at a time, with the dial as the
+single constant a causal recursion needs in order to start. Replace the kernel by a
+<span class="em">Fredholm</span> one, integrating over the whole interval, and every tooth couples to
+every other: there is no march at all, only a global solve. So the claim is stronger than
+<span class="em">the march can be written in terms of&nbsp;(V)</span>.
+<span class="key">The march exists because (V) is Volterra.</span>
+</p>
+
+<p>
+It is worth being exact about which numerical scheme this is, because the obvious name is only half
+of it. <a class="term" href="#a-collocation">Collocation</a> imposes an equation at chosen nodes. The
+march imposes it at the nodes <span class="em">and</span> imposes the cell means, and it needs that
+second condition precisely because the nodes are not chosen: they are <span class="key">unknowns</span>,
+solved for jointly with the masses, so the mesh is an output of the scheme rather than an input to it.
+That is the one structural difference from every textbook version, and it is not a technicality. Every
+convergence theorem in that literature assumes a mesh you control, which is exactly what is
+unavailable here.
+</p>
+
+<div class="panel trap">
+  <p class="ptitle">What this does and does not buy</p>
+  <p>
+    The reading above is about the <span class="key">algorithm</span>, and it is exact. On its own it
+    says nothing about how close a given rung is to the limit: that is section&nbsp;7's bound, which
+    is conditional on a fine mesh, and whether the mesh does become fine along the ladder is proved
+    at the quadratic and <span class="warnword">open</span> in general. Turning this reading into a
+    theorem about the limit would need the <span class="key">sign</span> of the closure residual,
+    which nothing here supplies. Importing a fact about the limiting object and asserting it of a
+    finite rung proves nothing.
+  </p>
+</div>
+
+</div></div>
+</section>
+
+<svg class="combrule" data-comb aria-hidden="true"></svg>
+
+<!-- ================================================================== -->
+<section class="chapter" id="s9">
+<div class="wrap"><div class="col">
+<h2><span class="secno">9</span>What is settled</h2>
+
+<div class="tablewrap">
+<table>
+  <thead><tr><th>Statement</th><th>Scope</th><th>Status</th></tr></thead>
+  <tbody>
+    <tr><td>The first-order conditions are the Volterra identity (V), at the atoms</td>
+        <td>every strictly convex <span class="fnmath" data-tex="c\in C^2"></span>, symmetric point</td>
+        <td><span class="st st-proved">proved</span></td></tr>
+    <tr><td>(V) has exactly one continuous solution; density form (D)</td>
+        <td>same</td><td><span class="st st-proved">proved</span></td></tr>
+    <tr><td>It overshoots one strictly inside the reach; unique cut-off <span class="fnmath" data-tex="\bar x"></span></td>
+        <td>same</td><td><span class="st st-proved">proved</span></td></tr>
+    <tr><td>The truncation is a Nash equilibrium, both payoffs zero</td>
+        <td>same</td><td><span class="st st-proved">proved</span></td></tr>
+    <tr><td>It is the unique equilibrium with both laws atomless</td>
+        <td>same</td><td><span class="st st-proved">proved</span></td></tr>
+    <tr><td>(D) coincides with a finite-order ODE exactly at integer <span class="fnmath" data-tex="\theta"></span></td>
+        <td>pure powers</td><td><span class="st st-cond">derived, audit owed</span></td></tr>
+    <tr><td>The paper's two examples, <span class="fnmath" data-tex="\ln 2"></span> and <span class="fnmath" data-tex="\pi/4"></span></td>
+        <td>pure powers, every <span class="fnmath" data-tex="v"></span></td>
+        <td><span class="st st-proved">proved</span></td></tr>
+    <tr><td>Ranked equilibria converge uniformly to it, at rate <span class="fnmath" data-tex="O(1/m)"></span></td>
+        <td><span class="fnmath" data-tex="c(e)=e^2"></span></td><td><span class="st st-proved">proved</span></td></tr>
+    <tr><td>The same bound with explicit constants</td>
+        <td>general <span class="fnmath" data-tex="c"></span>, <span class="em">conditional on the mesh vanishing</span></td>
+        <td><span class="st st-cond">proved, hypothesis owed</span></td></tr>
+    <tr><td>The mesh does vanish along the ladder</td>
+        <td>general <span class="fnmath" data-tex="c"></span></td><td><span class="st st-open">open</span></td></tr>
+    <tr><td>The gate residual is the collocation error, with a signed leading term</td>
+        <td>symmetric pure powers</td><td><span class="st st-open">conjecture — the live route</span></td></tr>
+  </tbody>
+</table>
+</div>
+
+<p>
+Short version: <span class="key">the competitive equilibrium is characterized</span> at full
+generality of the cost class, with no auxiliary hypotheses — the closed form is special to
+integer powers, the object is not. <span class="key">The convergence machinery is built</span>
+and is sharp at the quadratic. Missing is the one input that would let it run at general cost,
+and the sign of the collocation residual.
+</p>
+
+</div></div>
+</section>
+
+<svg class="combrule" data-comb aria-hidden="true"></svg>
+
+<!-- ================================================================== -->
+<section class="chapter" id="appendix">
+<div class="wrap"><div class="col">
+<h2><span class="secno">A</span>Appendix</h2>
+<p>
+Each entry stands alone. Every one carries a button back to wherever you jumped from, and a
+list of the sections that cite it.
+</p>
+</div>
+<div id="entries"></div>
+</div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap"><div class="col">
+    <p>
+      A companion to §4.2 of the paper, not a substitute for it: the closed form, the two
+      examples and the ranked-equilibria table are the paper's. Figures 1, 2, 3 and 5 are computed
+      in the browser from the march recursion; figure 4 solves the density equation
+      numerically. Self-checks run on load and print to the console. Nothing here is fitted.
+    </p>
+    <p>
+      Set in Monoflow. Colours are the Attic red-figure palette — terracotta figures reserved
+      against a fired black ground.
+    </p>
+  </div></div>
+</footer>
+
+<button id="returnbar" hidden>Back to where you were</button>
+
+<script src="vendor/katex/katex.min.js"></script>
+<script>
+/* ======================================================================
+   1. Mathematics
+   ====================================================================== */
+const TEX_INLINE = {
+  'm-vi':'v_i', 'm-ce':'c(e)', 'm-c0':"c(0)=c'(0)=0,\\ c''>0",
+  'm-reachdef':'w_i=c^{-1}(v_i)', 'm-Delta':'\\Delta', 'm-d':'d',
+  'm-U1':'U_1', 'm-cp0':"c'(0)=0", 'm-djunc':'d=w_2-w_1',
+  'm-e1':'e_1', 'm-e2':'e_2', 'm-leadcarry':'\\Delta+e_1-e_2',
+  'm-mce1':'-c(e_1)',
+  'm-ahead':'v_1-c(w_2-\\Delta-e_1+e_2)-c(e_1)',
+  'm-sigmn':'\\sigma(m,n)', 'm-m':'m', 'm-n':'n',
+  'm-vv':'v_1=v_2=v', 'm-D0':'\\Delta=0', 'm-w':'w=c^{-1}(v)',
+  'm-cpow':'c(e)=e^{\\theta}', 'm-thint':'\\theta',
+  'm-xk':'x_1<x_2<\\cdots', 'm-yk':'y_1<y_2<\\cdots',
+  'm-Yl':'Y_\\ell', 'm-mcy1':'-c(y_1)\\le 0',
+  'm-t':'t=q_1', 'm-tin':'(0,1]',
+  'm-sq11':'\\sigma(1,1)', 'm-t1':'t=1',
+  'm-ql':'q_\\ell', 'm-lek':'\\ell\\le k', 'm-xk3':'x_k',
+  'm-Phi':'\\Phi', 'm-xxk':'x=x_k',
+  'm-0w':'[0,w]', 'm-Gc':'G_c', 'm-gGp':"g=G_c'",
+  'm-Gc2':'G_c', 'm-x5':'0\\le x\\le w', 'm-xw':'x=w',
+  'm-cpy':"c'(y)", 'm-cpw':"c'(w)", 'm-0wo':'[0,w)',
+  'm-cpw2':"c'(w)", 'm-cpw3':"c'(w)", 'm-cpw4':"c'(w)",
+  'm-Gc4':'G_c', 'm-xb':'\\bar x', 'm-0xb':'[0,\\bar x]',
+  'm-Gc6':'G_c', 'm-Gc7':'G_c', 'm-0xb2':'[0,\\bar x]',
+  'm-cwv':'c(w)=v',
+  'm-cpow2':'c(e)=e^{\\theta}', 'm-v1':'v=1', 'm-w1':'w=1',
+  'm-beta':'\\beta=\\theta-1\\ge1', 'm-gx':'g(x)',
+  'm-chainwalk':'I_{\\beta-1}\\to I_{\\beta-2}\\to\\cdots', 'm-I0':'I_0',
+  'm-theta':'\\theta', 'm-th2':'\\theta=2', 'm-ode2':"g'=g", 'm-ic2':'g(0)=1',
+  'm-th3':'\\theta=3', 'm-ode3':"g''-2g'+2g=0", 'm-ic3':"g(0)=0,\\ g'(0)=2",
+  'm-roots':'1\\pm i', 'm-Geq1':'G(x)=1', 'm-tan1':'\\tan x=1',
+  'm-pi4':'\\bar x=\\tfrac{\\pi}{4}\\,w',
+  'm-th4':'\\theta=4', 'm-ode4':"g'''-3g''+6g'-6g=0",
+  'm-charpoly':'r^3-3r^2+6r-6', 'm-realroot':'1.5961', 'm-degbeta':'\\theta-1',
+  'm-ce2':'c(e)=e^2', 'm-Ktstar':'K\\,t^*\\ \\text{with}\\ K=2e^3+e<43',
+  'm-dialasym':'1/t^*=2m-\\tfrac32+O(1/m)', 'm-m2':'m', 'm-onem':'1/m',
+  'm-closure':'\\bar G_c(\\bar x)=1',
+  'm-cprime':"c'", 'm-cplain':'c', 'm-Phi2':'\\Phi', 'm-Phi3':'\\Phi',
+  'm-xeff':'x', 'm-u1x1':'u_1=U_1(x_1)', 'm-Rsaw':'R', 'm-Rsaw2':'R',
+  'm-jumpsize':"q_\\ell\\,c'(w_1)", 'm-ccc':"c'''\\equiv0", 'm-thq':'\\theta=2'
+};
+
+const TEX_DISPLAY = {
+  'heroeq': "c'(w)\\,\\Phi(x)\\;-\\;\\int_0^{x}c''(w+y-x)\\,\\Phi(y)\\,dy\\;=\\;c'(x)",
+  'e-power': "U_1(d)\\;=\\;\\begin{cases} 0, & d\\le w_2-w_1,\\\\[2pt] v_1-c(w_2-d), & w_2-w_1\\le d\\le w_2,\\\\[2pt] v_1, & d\\ge w_2.\\end{cases}",
+  'e-static': "u_1(e_1,e_2)\\;=\\;U_1(\\Delta+e_1-e_2)\\;-\\;c(e_1)",
+  'e-papercomp': "G(x)\\;=\\;(-1)^{\\theta-1}+\\sum_{k=1}^{\\theta-1}C_k\\,e^{\\,c_k x}\\qquad(\\theta\\in\\{2,3,4,\\dots\\})",
+  'e-twoexamples': "\\begin{aligned}\\theta=2:&\\quad G(x)=e^{x/\\sqrt v}-1\\ \\text{ up to }\\ \\bar x=\\sqrt v\\,\\ln 2,\\\\[4pt]\\theta=3:&\\quad G(x)=1+e^{x/v^{1/3}}\\bigl(\\sin\\tfrac{x}{v^{1/3}}-\\cos\\tfrac{x}{v^{1/3}}\\bigr)\\ \\text{ up to }\\ \\bar x=\\tfrac{\\pi}{4}v^{1/3}\\end{aligned}",
+  'e-payoffint': "U_1(x)\\;=\\;\\int_0^{x}c'(w_1+y-x)\\,\\Phi(y)\\,dy\\;-\\;c(x)",
+  'e-marginal': "R(x)\\;=\\;U_1'(x)\\;=\\;\\int_{[0,x]}c'(w_1+y-x)\\,d\\Phi(y)\\;-\\;c'(x)",
+  'e-tworules': "\\underbrace{R(x_k)=0}_{\\text{first-order condition}}\\qquad\\text{and}\\qquad\\underbrace{\\int_{x_k}^{x_{k+1}}\\!R(x)\\,dx=0}_{\\text{indifference}}",
+  'e-interleave': "0=y_1\\;<\\;x_1\\;<\\;y_2\\;<\\;x_2\\;<\\;y_3\\;<\\;\\cdots",
+  'e-signpattern': "v_1-\\tilde c(w_1+Y_\\ell-x)\\;\\begin{cases} <0, & x<Y_\\ell,\\\\[2pt] =0, & x=Y_\\ell,\\\\[2pt] >0\\ \\text{and rising}, & x>Y_\\ell.\\end{cases}",
+  'e-rungs': "\\underbrace{\\textstyle\\sum_{\\ell\\le m}q_\\ell=1}_{\\sigma(m,m)}\\qquad\\text{or}\\qquad\\underbrace{\\textstyle\\sum_{j\\le m}p_j=1}_{\\sigma(m,m+1)}",
+  'e-chain': "\\sigma(1,1)\\;\\to\\;\\sigma(1,2)\\;\\to\\;\\sigma(2,2)\\;\\to\\;\\sigma(2,3)\\;\\to\\;\\cdots",
+  'e-foc1': "c'(x_k)\\;=\\;\\sum_{\\ell\\le k} q_\\ell\\,c'(w+y_\\ell-x_k)",
+  'e-ftc': "c'(w+y_\\ell-x_k)\\;=\\;c'(w)\\;-\\;\\int_{y_\\ell}^{x_k}c''(w+y-x_k)\\,dy",
+  'e-indicator': "\\sum_{\\ell\\le k}q_\\ell\\,\\mathbf 1\\{y\\ge y_\\ell\\}\\;=\\;F_2(y),\\qquad y<x_k",
+  'e-volterra': "c'(w)\\,\\Phi(x)\\;-\\;\\int_0^{x}c''(w+y-x)\\,\\Phi(y)\\,dy\\;=\\;c'(x)",
+  'e-density': "c'(w)\\,g(x)\\;=\\;c''(x)\\;+\\;\\int_0^{x}c''(w+y-x)\\,g(y)\\,dy",
+  'e-P2': "\\int_0^{x}c'(w+y-x)\\,g(y)\\,dy\\;=\\;c'(x),\\qquad 0\\le x\\le w",
+  'e-total': "\\int_0^{w}c'(y)\\,g(y)\\,dy\\;=\\;c'(w)",
+  'e-overshoot': "c'(w)\\bigl(G_c(w)-1\\bigr)\\;=\\;\\int_0^{w}\\bigl[c'(w)-c'(y)\\bigr]g(y)\\,dy\\;>\\;0",
+  'e-trunc': "\\bar G_c(x)\\;=\\;\\begin{cases} G_c(x), & 0\\le x\\le\\bar x,\\\\[2pt] 1, & x\\ge\\bar x,\\end{cases}\\qquad G_c(\\bar x)=1,\\quad 0<\\bar x<w",
+  'e-nash': "U(x)=0\\ \\text{ on }[0,\\bar x], \\qquad U(x)<0\\ \\text{ for } x>\\bar x",
+  'e-powereq': "g(x)\\;=\\;\\beta\\,x^{\\beta-1}\\;+\\;\\beta\\int_0^{x}\\bigl(1-(x-y)\\bigr)^{\\beta-1}g(y)\\,dy",
+  'e-Ij': "I_j(x)\\;:=\\;\\int_0^{x}\\bigl(1-(x-y)\\bigr)^{j}\\,g(y)\\,dy",
+  'e-Ijrec': "I_j'\\;=\\;g\\;-\\;j\\,I_{j-1},\\qquad I_0'\\;=\\;g",
+  'e-integer': "\\beta-1\\in\\mathbb Z_{\\ge0}\\qquad\\Longleftrightarrow\\qquad\\theta\\in\\{2,3,4,\\dots\\}",
+  'e-quad': "g(x)=e^{x},\\qquad G(x)=e^{x}-1,\\qquad \\bar x=\\ln 2",
+  'e-cubicsol': "g(x)=2e^{x}\\sin x,\\qquad G(x)=1+e^{x}\\bigl(\\sin x-\\cos x\\bigr)",
+  'e-mesh': "c'(x_k)-c'(x_{k-1})\\;\\le\\;c'(w)\\,q_k,\\qquad c'(y_{k+1})-c'(y_k)\\;\\le\\;c'(w)\\,p_k",
+  'e-conv': "\\sup_{x\\ge0}\\bigl|F_i(x)-\\bar G_c(x)\\bigr|\\;\\le\\;K_c\\,h,\\qquad h=\\text{the mesh}",
+  'e-residual': "\\mathcal R[\\Phi](x)\\;:=\\;\\underbrace{c'(w)\\,\\Phi(x)-\\int_0^{x}c''(w+y-x)\\,\\Phi(y)\\,dy-c'(x)}_{\\text{the amount by which (V) fails at }x}\\;=\\;R(x)",
+  'e-marchres': "\\underbrace{\\mathcal R[\\Phi](x_k)=0}_{\\text{a zero at every node}}\\qquad\\text{and}\\qquad\\underbrace{\\int_{x_k}^{x_{k+1}}\\!\\mathcal R[\\Phi](x)\\,dx=0}_{\\text{zero mean on every cell}}",
+};
+
+function renderInto(id, tex, display) {
+  const host = document.getElementById(id);
+  if (!host) return;
+  // a tagged display carries its (V), (D), ... label as a child, and katex.render
+  // replaces whatever it is handed: typeset into an inner span so the tag survives
+  let target = host;
+  if (host.classList.contains('tagged')) {
+    target = host.querySelector('.eqbody');
+    if (!target) {
+      target = document.createElement('span');
+      target.className = 'eqbody';
+      host.insertBefore(target, host.firstChild);
+    }
+  }
+  try { katex.render(tex, target, { displayMode: !!display, throwOnError: false, output: 'html' }); }
+  catch (e) { target.textContent = tex; }
+}
+function renderFnMath(root) {
+  (root || document).querySelectorAll('.fnmath[data-tex]').forEach(el => {
+    try { katex.render(el.dataset.tex, el, { throwOnError: false, output: 'html' }); }
+    catch (e) { el.textContent = el.dataset.tex; }
+  });
+}
+function renderAllMath() {
+  for (const [id, tex] of Object.entries(TEX_INLINE))  renderInto(id, tex, false);
+  for (const [id, tex] of Object.entries(TEX_DISPLAY)) renderInto(id, tex, true);
+  renderFnMath(document);
+}
+
+/* ======================================================================
+   2. The march at c=e^2, v=1, Delta=0 — exact.
+
+   Gaps  G_i = t/(1+i t);  x_k = sum_{l<=2k-1} G_l ,  y_k = sum_{l<=2k-2} G_l.
+   Masses come from the Volterra identity itself, which here reads
+   Q_k = x_k + int_0^{x_k} F_2, i.e.
+
+       q_k (1 - x_k + y_k)     = x_k     - sum_{l<k} q_l (1 - x_k     + y_l),
+       p_k (1 - y_{k+1} + x_k) = y_{k+1} - sum_{j<k} p_j (1 - y_{k+1} + x_j).
+
+   Control, printed on load: q_1 must come back exactly equal to the dial t.
+   ====================================================================== */
+function atoms(t, m) {
+  const gap = i => t / (1 + i * t);
+  const x = [], y = [0];
+  let s = 0, i = 1;
+  for (let k = 1; k <= m; k++) {
+    while (i <= 2 * k - 1) { s += gap(i); i++; }
+    x.push(s);
+    while (i <= 2 * k) { s += gap(i); i++; }
+    y.push(s);
+  }
+  return { x, y };
+}
+function qMasses(t, m) {
+  const { x, y } = atoms(t, m), q = [];
+  for (let k = 0; k < m; k++) {
+    let r = x[k];
+    for (let l = 0; l < k; l++) r -= q[l] * (1 - x[k] + y[l]);
+    q.push(r / (1 - x[k] + y[k]));
+  }
+  return { x, y, q };
+}
+function pMasses(t, m) {
+  const { x, y } = atoms(t, m + 1), p = [];
+  for (let k = 0; k < m; k++) {
+    let r = y[k + 1];
+    for (let j = 0; j < k; j++) r -= p[j] * (1 - y[k + 1] + x[j]);
+    p.push(r / (1 - y[k + 1] + x[k]));
+  }
+  return { x, y, p };
+}
+const Qtot = (t, m) => qMasses(t, m).q.reduce((a, b) => a + b, 0);
+const Ptot = (t, m) => pMasses(t, m).p.reduce((a, b) => a + b, 0);
+
+function closeDial(f, m) {
+  let lo = 1e-12, hi = 1;
+  if (f(hi, m) < 1) return hi;
+  for (let i = 0; i < 200; i++) { const z = 0.5 * (lo + hi); if (f(z, m) < 1) lo = z; else hi = z; }
+  return 0.5 * (lo + hi);
+}
+/* contestant 1's rent at dial t:  u1 = t[1-(1-x1)^2] - x1^2 */
+const rent = t => { const x1 = t / (1 + t); return t * (1 - (1 - x1) ** 2) - x1 * x1; };
+
+const POLE = x => Math.min(Math.exp(x) - 1, 1);
+
+function supError(m) {
+  const t = closeDial(Qtot, m), { y, q } = qMasses(t, m);
+  let F = 0, sup = 0;
+  for (let k = 0; k < m; k++) {
+    sup = Math.max(sup, Math.abs(F - POLE(y[k])));
+    F += q[k];
+    sup = Math.max(sup, Math.abs(F - POLE(y[k])));
+    if (k + 1 < m) sup = Math.max(sup, Math.abs(F - POLE(y[k + 1])));
+  }
+  return { sup: Math.max(sup, Math.abs(1 - POLE(y[m - 1]))), t };
+}
+
+/* the ranked ladder: alternate rectangle and square closures */
+function ladder(maxm) {
+  const out = [{ label: 'σ(1,1)', t: 1, u: rent(1) }];
+  for (let m = 1; m <= maxm; m++) {
+    const tr = closeDial(Ptot, m);
+    out.push({ label: `σ(${m},${m + 1})`, t: tr, u: rent(tr) });
+    const ts = closeDial(Qtot, m + 1);
+    out.push({ label: `σ(${m + 1},${m + 1})`, t: ts, u: rent(ts) });
+  }
+  return out;
+}
+
+/* ======================================================================
+   3. The competitive density at a general power, by product integration:
+      g(x) = b x^{b-1} + b \int_0^x (1-(x-y))^{b-1} g(y) dy,  b = theta-1.
+      Controls: must return ln 2 at theta=2 and pi/4 at theta=3.
+   ====================================================================== */
+function poleDensity(theta, n) {
+  const b = theta - 1, h = 1 / n, g = new Float64Array(n + 1);
+  const K = (x, y) => b * Math.pow(1 - (x - y), b - 1);
+  g[0] = (b === 1) ? 1 : 0;
+  for (let i = 1; i <= n; i++) {
+    const x = i * h;
+    let acc = 0.5 * K(x, 0) * g[0];
+    for (let j = 1; j < i; j++) acc += K(x, j * h) * g[j];
+    g[i] = (b * Math.pow(x, b - 1) + h * acc) / (1 - 0.5 * h * b);
+  }
+  return g;
+}
+function poleTop(theta, n) {
+  n = n || 3000;
+  const g = poleDensity(theta, n), h = 1 / n;
+  let G = 0, prev = 0;
+  for (let i = 1; i <= n; i++) {
+    prev = G; G += 0.5 * h * (g[i - 1] + g[i]);
+    if (G >= 1) return (i - 1 + (1 - prev) / (G - prev)) * h;
+  }
+  return NaN;
+}
+
+/* ======================================================================
+   4. Drawing
+   ====================================================================== */
+const C = { grid:'rgba(113,49,31,0.55)', p1:'#B55232', p2:'#E6D1AD', acc:'#D07852', mut:'#B79D82' };
+const NS = 'http://www.w3.org/2000/svg';
+const el = (n, a) => { const e = document.createElementNS(NS, n); for (const k in a) e.setAttribute(k, a[k]); return e; };
+const txt = (svg, x, y, fill, s, anchor, size) => {
+  const t = el('text', { x, y, fill, 'font-size': size || 14, 'font-family': 'Monoflow, monospace' });
+  if (anchor) t.setAttribute('text-anchor', anchor);
+  t.textContent = s; svg.appendChild(t); return t;
+};
+
+function drawCombRules() {
+  document.querySelectorAll('svg[data-comb]').forEach(svg => {
+    svg.setAttribute('viewBox', '0 0 1000 18');
+    svg.setAttribute('preserveAspectRatio', 'none');
+    svg.appendChild(el('line', { x1:0, y1:17.5, x2:1000, y2:17.5, stroke:C.grid, 'stroke-width':1 }));
+    let s = 0, i = 1;
+    while (s < 998) {
+      s += 900 * (0.09 / (1 + i * 0.09));
+      if (s > 998) break;
+      const tall = i % 2 === 1;
+      svg.appendChild(el('line', {
+        x1:s.toFixed(2), y1:tall?1:9, x2:s.toFixed(2), y2:17.5,
+        stroke: tall ? C.p1 : C.p2, 'stroke-width':1, opacity: tall ? 0.95 : 0.45 }));
+      i++;
+    }
+  });
+}
+
+/* ---- Figure 1: the payoff and its kink ---- */
+function drawFig1(e2) {
+  const host = document.getElementById('fig1svg'); if (!host) return;
+  const W = 860, H = 420, L = 62, R = 26, T = 22, B = 66;
+  const svg = el('svg', { viewBox:`0 0 ${W} ${H}`, width:'100%', role:'img',
+    'aria-label':`Payoff against own effort when the rival plays ${e2.toFixed(3)}.` });
+
+  const XMAX = 1.3, YMIN = -0.55, YMAX = 0.30;
+  const px = x => L + (x / XMAX) * (W - L - R);
+  const py = v => (H - B) - ((v - YMIN) / (YMAX - YMIN)) * (H - B - T);
+
+  const U1 = d => d <= 0 ? 0 : (d >= 1 ? 1 : 1 - (1 - d) * (1 - d));
+  const u = e1 => U1(e1 - e2) - e1 * e1;
+
+  for (let v = -0.5; v <= 0.2501; v += 0.25) {
+    const zero = Math.abs(v) < 1e-9;
+    svg.appendChild(el('line', { x1:L, y1:py(v), x2:W-R, y2:py(v), stroke:C.grid,
+      'stroke-width':1, opacity: zero ? 0.9 : 0.35, 'stroke-dasharray': zero ? '' : '2 4' }));
+    txt(svg, L - 10, py(v) + 5, C.mut, v.toFixed(2), 'end', 13);
+  }
+  svg.appendChild(el('line', { x1:L, y1:T, x2:L, y2:H-B, stroke:C.mut, 'stroke-width':1 }));
+
+  svg.appendChild(el('line', { x1:px(e2), y1:T, x2:px(e2), y2:H-B, stroke:C.p2,
+    'stroke-width':1, 'stroke-dasharray':'4 4', opacity:0.75 }));
+  txt(svg, px(e2) + 8, T + 15, C.p2, 'junction — you become the favourite', null, 13);
+
+  let d = '';
+  for (let i = 0; i <= 600; i++) {
+    const x = (i / 600) * XMAX;
+    d += (i ? ' L' : 'M') + px(x).toFixed(2) + ' ' + py(u(x)).toFixed(2);
+  }
+  svg.appendChild(el('path', { d, fill:'none', stroke:C.p1, 'stroke-width':2.2 }));
+
+  const eInt = (1 + e2) / 2, uInt = u(eInt);
+  const interiorWins = uInt > 0;
+  [[0, 0, 'no effort', !interiorWins], [eInt, uInt, 'interior peak', interiorWins]]
+    .forEach(([x, v, name, isBest]) => {
+      svg.appendChild(el('circle', { cx:px(x), cy:py(v), r:isBest?6:4.5,
+        fill:isBest?C.acc:'none', stroke:C.acc, 'stroke-width':1.8 }));
+      txt(svg, px(x) + 12, py(v) - 10, C.acc, name + (isBest ? ' — the better one' : ''), null, 13);
+    });
+
+  for (const v of [0, 0.5, 1.0]) txt(svg, px(v), H - B + 22, C.mut, v.toFixed(1), 'middle', 13);
+  txt(svg, W - R, H - B + 22, C.mut, 'your effort e₁', 'end', 13);
+  host.innerHTML = ''; host.appendChild(svg);
+
+  document.getElementById('fig1readout').innerHTML =
+    `rival plays <b>${e2.toFixed(5)}</b> &nbsp; interior peak at <b>${eInt.toFixed(4)}</b>, ` +
+    `worth <b>${uInt.toFixed(5)}</b> &nbsp; no effort is worth <b>0</b> &nbsp;→&nbsp; ` +
+    `<b>${interiorWins ? 'the interior peak wins' : 'no effort wins'}</b>` +
+    (Math.abs(e2 - (Math.SQRT2 - 1)) < 1e-6 ? ' &nbsp;· exactly the tie, at √2−1' : '');
+}
+
+/* ---- Figure 2: the ranked ladder ---- */
+function drawFig2() {
+  const host = document.getElementById('fig2svg'); if (!host) return;
+  const W = 860, H = 350, L = 62, R = 26, T = 22, B = 86;
+  const svg = el('svg', { viewBox:`0 0 ${W} ${H}`, width:'100%', role:'img',
+    'aria-label':'Contestant 1 payoff along the ladder of ranked equilibria.' });
+  const rows = ladder(6), n = rows.length;
+  const px = i => L + (i / (n - 1)) * (W - L - R);
+  const py = v => (H - B) - (v / 0.55) * (H - B - T);
+
+  for (const v of [0, 0.1, 0.2, 0.3, 0.4, 0.5]) {
+    svg.appendChild(el('line', { x1:L, y1:py(v), x2:W-R, y2:py(v), stroke:C.grid,
+      'stroke-width':1, opacity: v === 0 ? 0.9 : 0.35, 'stroke-dasharray': v === 0 ? '' : '2 4' }));
+    txt(svg, L - 10, py(v) + 5, C.mut, v.toFixed(1), 'end', 13);
+  }
+  let d = '';
+  rows.forEach((r, i) => { d += (i ? ' L' : 'M') + px(i).toFixed(2) + ' ' + py(r.u).toFixed(2); });
+  svg.appendChild(el('path', { d, fill:'none', stroke:C.p1, 'stroke-width':2 }));
+  rows.forEach((r, i) => {
+    const inPaper = i < 9;
+    svg.appendChild(el('circle', { cx:px(i), cy:py(r.u), r:inPaper?5:3.2,
+      fill:inPaper?C.p1:'none', stroke:C.p1, 'stroke-width':1.6 }));
+    if (i < 10 || i % 2 === 0) {
+      const t = txt(svg, px(i), H - B + 26, C.mut, r.label, 'end', 12);
+      t.setAttribute('transform', `rotate(-45 ${px(i)} ${H - B + 26})`);
+    }
+  });
+  txt(svg, px(0) + 12, py(rows[0].u) - 12, C.acc, 'collusion — half the prize', null, 13);
+  txt(svg, W - R, py(0) - 12, C.p2, 'competitive: zero', 'end', 13);
+  host.innerHTML = ''; host.appendChild(svg);
+
+  const order = ['σ(1,1)','σ(1,2)','σ(2,2)','σ(2,3)','σ(3,3)','σ(3,4)','σ(4,4)','σ(4,5)','σ(5,5)'];
+  const paper = [0.500, 0.291, 0.097, 0.064, 0.038, 0.028, 0.019, 0.015, 0.012];
+  document.getElementById('fig2readout').innerHTML =
+    'computed / paper\u2019s table &nbsp; ' +
+    order.map((l, i) => `${l} <b>${rows.find(r => r.label === l).u.toFixed(3)}</b>/${paper[i].toFixed(3)}`).join(' &nbsp; ');
+}
+
+/* ======================================================================
+   3b. The march at a GENERAL power cost, run from the two rules of section 4:
+         R(own atom) = 0                          (first-order condition)
+         int of R between consecutive own atoms = 0   (indifference)
+       Implemented the way the rules read: the new mass enters both linearly,
+       so slave it off the first rule and bisect the new atom on the second.
+       Control, printed on load: at theta = 2 it must return the quadratic's
+       dials and payoffs, which the closed-form kernel above produces independently.
+   ====================================================================== */
+function costPair(th) { return [e => Math.pow(e, th), e => th * Math.pow(e, th - 1)]; }
+
+function marchGen(th, t, m) {
+  const [c, cp] = costPair(th), w = 1, EPS = 1e-13;
+  const y = [0], q = [t], x = [], p = [];
+  let lo = 1e-14, hi = w - 1e-14;                    // x1 solves t c'(w-x) = c'(x)
+  for (let i = 0; i < 80; i++) { const z = .5 * (lo + hi);
+    if (t * cp(w - z) - cp(z) > 0) lo = z; else hi = z; }
+  x.push(.5 * (lo + hi));
+  const u1 = t * (1 - c(w - x[0])) - c(x[0]);
+  const bisect = (f, a, b) => {
+    let fa = f(a); if (!(fa * f(b) <= 0)) return null;
+    for (let i = 0; i < 80; i++) { const z = .5 * (a + b), fz = f(z);
+      if (fa * fz <= 0) b = z; else { a = z; fa = fz; } }
+    return .5 * (a + b);
+  };
+  for (let k = 0; k < m; k++) {
+    const Pof = yy => { let s = 0; for (let i = 0; i < k; i++) s += p[i] * cp(w + x[i] - yy);
+                        return (cp(yy) - s) / cp(w + x[k] - yy); };
+    const gB = yy => { const pk = Pof(yy); let s = 0;
+      for (let i = 0; i < k; i++) s += p[i] * (1 - c(w + x[i] - yy));
+      return s + pk * (1 - c(w + x[k] - yy)) - c(yy); };
+    const yy = bisect(gB, x[k] + EPS, Math.min(w, x[k] + w) - EPS);
+    if (yy === null) return null;
+    p.push(Pof(yy)); y.push(yy);
+    if (k === m - 1) break;
+    const Qof = xx => { let s = 0; for (let l = 0; l <= k; l++) s += q[l] * cp(w + y[l] - xx);
+                        return (cp(xx) - s) / cp(w + y[k + 1] - xx); };
+    const hC = xx => { const qk = Qof(xx); let s = 0;
+      for (let l = 0; l <= k; l++) s += q[l] * (1 - c(w + y[l] - xx));
+      return s + qk * (1 - c(w + y[k + 1] - xx)) - c(xx) - u1; };
+    const xx = bisect(hC, y[k + 1] + EPS, w - EPS);
+    if (xx === null) return null;
+    q.push(Qof(xx)); x.push(xx);
+  }
+  return { x, y, q, p, u1 };
+}
+
+function dialSquareGen(th, m) {          // close sum q = 1: scan, then bisect the up-crossing
+  if (m === 1) return 1;
+  const F = t => { const r = marchGen(th, t, m); return r ? r.q.reduce((a, b) => a + b, 0) - 1 : null; };
+  let prev = null, lo = null, hi = null, N = 600;
+  for (let i = 1; i < N; i++) {
+    const t = i / N, v = F(t);
+    if (v === null) { prev = null; continue; }
+    if (prev && prev[1] < 0 && v >= 0) { lo = prev[0]; hi = t; break; }
+    prev = [t, v];
+  }
+  if (lo === null) return null;
+  for (let i = 0; i < 70; i++) { const z = .5 * (lo + hi), v = F(z);
+    if (v === null) break; if (v < 0) lo = z; else hi = z; }
+  return .5 * (lo + hi);
+}
+
+/* the marginal return of section 4, R(x) = int_{[0,x]} c'(w+y-x) dPhi(y) - c'(x) */
+function marginal(th, y, q) {
+  const [, cp] = costPair(th);
+  return xx => { let s = 0;
+    for (let l = 0; l < q.length; l++) if (y[l] <= xx + 1e-15) s += q[l] * cp(1 + y[l] - xx);
+    return s - cp(xx); };
+}
+
+/* ---- Figure 3: the sawtooth, its zeros and its balancing lobes ---- */
+function drawFigM(th) {
+  const host = document.getElementById('figMsvg'); if (!host) return;
+  const M = 3, t = dialSquareGen(th, M), sol = t === null ? null : marchGen(th, t, M);
+  if (!sol) { host.textContent = 'no rung at this exponent'; return; }
+  // sigma(m,m) has exactly m rival atoms; the march's generic loop overruns by one
+  // half-step and leaves a vestigial y_{m+1}, which is no part of the equilibrium
+  const { x, u1 } = sol, q = sol.q, y = sol.y.slice(0, M), R = marginal(th, y, q);
+
+  const W = 860, H = 392, L = 54, Rt = 26, T = 26, B = 68;
+  const svg = el('svg', { viewBox:`0 0 ${W} ${H}`, width:'100%', role:'img',
+    'aria-label':`The marginal return along contestant 1's effort at cost exponent ${th}.` });
+  const XMAX = x[M - 1] * 1.04;
+  let vmax = 0;
+  for (let i = 0; i <= 400; i++) vmax = Math.max(vmax, Math.abs(R(i / 400 * XMAX)));
+  for (const yy of y) vmax = Math.max(vmax, Math.abs(R(yy)), Math.abs(R(yy - 1e-9)));
+  vmax *= 1.12;
+  const px = v => L + (v / XMAX) * (W - L - Rt);
+  const py = v => T + (1 - (v + vmax) / (2 * vmax)) * (H - B - T);
+
+  const seg = (a, b, n) => { const pts = [];
+    for (let i = 0; i <= n; i++) { const xx = a + (b - a) * i / n;
+      pts.push([px(xx), py(R(Math.min(xx, b - 1e-12)))]); } return pts; };
+  const lobe = (a, b, fill) => {
+    const pts = seg(a, b, 90);
+    const d = 'M' + px(a) + ' ' + py(0) + ' L' + pts.map(P => P[0].toFixed(2) + ' ' + P[1].toFixed(2)).join(' L')
+            + ' L' + px(b) + ' ' + py(0) + ' Z';
+    svg.appendChild(el('path', { d, fill, stroke:'none' }));
+  };
+
+  // balancing lobes, one pair per cell between consecutive own atoms
+  for (let k = 0; k < M - 1; k++) {
+    lobe(x[k], y[k + 1], 'rgba(113,49,31,0.55)');
+    lobe(y[k + 1], x[k + 1], 'rgba(208,120,82,0.30)');
+  }
+  lobe(0, x[0], 'rgba(230,209,173,0.13)');            // the unpartnered first lobe = u1
+
+  svg.appendChild(el('line', { x1:L, y1:py(0), x2:W-Rt, y2:py(0), stroke:C.mut, 'stroke-width':1 }));
+  svg.appendChild(el('line', { x1:L, y1:T, x2:L, y2:H-B, stroke:C.mut, 'stroke-width':1, opacity:0.5 }));
+
+  // the curve, broken at every rival atom so the jumps show as jumps
+  const edges = [0, ...y.slice(1), x[M - 1]].sort((a, b) => a - b);
+  for (let i = 0; i + 1 < edges.length; i++) {
+    const pts = seg(edges[i], edges[i + 1], 120);
+    svg.appendChild(el('path', { d:'M' + pts.map(P => P[0].toFixed(2) + ' ' + P[1].toFixed(2)).join(' L'),
+      fill:'none', stroke:C.p1, 'stroke-width':2.2 }));
+  }
+  y.forEach((yy, l) => {                               // the upward jumps, at the rival's atoms
+    const below = l === 0 ? 0 : R(yy - 1e-9);
+    svg.appendChild(el('line', { x1:px(yy), y1:py(below), x2:px(yy), y2:py(R(yy)),
+      stroke:C.p2, 'stroke-width':2, 'stroke-dasharray':'3 3', opacity:0.9 }));
+    txt(svg, px(yy), H - B + 38, C.p2, 'ỹ' + '₁₂₃₄₅'[l], 'middle', 13);
+  });
+  x.forEach((xx, k) => {                               // own atoms: the zeros
+    svg.appendChild(el('circle', { cx:px(xx), cy:py(0), r:5.5, fill:'#171310',
+      stroke:C.acc, 'stroke-width':2 }));
+    txt(svg, px(xx), H - B + 20, C.acc, 'x' + '₁₂₃₄₅'[k], 'middle', 13);
+  });
+  txt(svg, L - 8, py(0) + 4, C.mut, '0', 'end', 13);
+  txt(svg, px(0) + 8, py(0) - 12, '#E6D1AD', 'this area is u₁', null, 13);
+  txt(svg, W - Rt, T + 4, C.p1, 'R(x), the marginal return', 'end', 13);
+  txt(svg, W - Rt, H - 8, C.mut, 'contestant 1’s effort x', 'end', 13);
+  host.innerHTML = ''; host.appendChild(svg);
+
+  // areas, by Simpson on each lobe, reported as the check they are
+  const simp = (a, b, n) => { n += n % 2; const h = (b - a) / n; let s = R(a) + R(b - 1e-12);
+    for (let i = 1; i < n; i++) s += (i % 2 ? 4 : 2) * R(a + i * h); return s * h / 3; };
+  const cells = [];
+  for (let k = 0; k < M - 1; k++)
+    cells.push(simp(x[k], y[k + 1], 400) + simp(y[k + 1], x[k + 1], 400));
+  document.getElementById('figMreadout').innerHTML =
+    `θ = <b>${th}</b> &nbsp; dial t* = <b>${t.toFixed(8)}</b> &nbsp; Σq = <b>${q.reduce((a,b)=>a+b,0).toFixed(10)}</b>` +
+    ` &nbsp; u₁ = <b>${u1.toFixed(6)}</b><br>` +
+    `R at her own atoms: <b>${x.map(v => R(v).toExponential(1)).join(', ')}</b>` +
+    ` &nbsp;·&nbsp; lobe pairs, net area: <b>${cells.map(v => v.toExponential(1)).join(', ')}</b>` +
+    ` &nbsp;·&nbsp; first lobe <b>${simp(0, x[0], 400).toFixed(6)}</b> against u₁ <b>${u1.toFixed(6)}</b>`;
+}
+
+/* ---- Figure 4: the cut-off against the exponent ---- */
+function drawFig3() {
+  const host = document.getElementById('fig3svg'); if (!host) return;
+  const W = 860, H = 330, L = 60, R = 26, T = 22, B = 56;
+  const svg = el('svg', { viewBox:`0 0 ${W} ${H}`, width:'100%', role:'img',
+    'aria-label':'The competitive cut-off rising with the cost exponent.' });
+  const TMIN = 2, TMAX = 12, YMIN = 0.6, YMAX = 1.0;
+  const px = th => L + ((th - TMIN) / (TMAX - TMIN)) * (W - L - R);
+  const py = v => (H - B) - ((v - YMIN) / (YMAX - YMIN)) * (H - B - T);
+
+  for (let v = 0.6; v <= 1.0001; v += 0.1) {
+    svg.appendChild(el('line', { x1:L, y1:py(v), x2:W-R, y2:py(v), stroke:C.grid,
+      'stroke-width':1, opacity:0.35, 'stroke-dasharray':'2 4' }));
+    txt(svg, L - 10, py(v) + 5, C.mut, v.toFixed(1), 'end', 13);
+  }
+  svg.appendChild(el('line', { x1:L, y1:py(1), x2:W-R, y2:py(1), stroke:C.p2, 'stroke-width':1, opacity:0.6 }));
+  txt(svg, W - R - 4, py(1) - 8, C.p2, 'the reach w = 1', 'end', 13);
+  for (let th = 2; th <= 12; th += 2) txt(svg, px(th), H - B + 22, C.mut, String(th), 'middle', 13);
+
+  let d = '';
+  for (let i = 0; i <= 44; i++) {
+    const th = TMIN + (i / 44) * (TMAX - TMIN);
+    d += (i ? ' L' : 'M') + px(th).toFixed(2) + ' ' + py(poleTop(th, 1200)).toFixed(2);
+  }
+  svg.appendChild(el('path', { d, fill:'none', stroke:C.p1, 'stroke-width':2 }));
+  [[2, Math.LN2, 'ln 2', 26], [3, Math.PI/4, 'π/4', -12]].forEach(([th, v, nm, dy]) => {
+    svg.appendChild(el('circle', { cx:px(th), cy:py(v), r:5, fill:C.acc }));
+    txt(svg, px(th) + 12, py(v) + dy, C.acc, `${nm} = ${v.toFixed(4)}`, null, 15);
+  });
+  txt(svg, W - R, H - 8, C.mut, 'cost exponent θ', 'end', 13);
+  host.innerHTML = ''; host.appendChild(svg);
+  document.getElementById('fig3readout').innerHTML =
+    'computed &nbsp; ' + [2,3,4,6,10].map(t => `θ=${t}: <b>${poleTop(t, 2500).toFixed(5)}</b>`).join(' &nbsp; ') +
+    ` &nbsp;·&nbsp; controls: ln 2 = ${Math.LN2.toFixed(6)}, π/4 = ${(Math.PI/4).toFixed(6)}`;
+}
+
+/* ---- Figure 5: the convergence rate ---- */
+function drawFig4() {
+  const host = document.getElementById('fig4svg'); if (!host) return;
+  const W = 860, H = 340, L = 64, R = 26, T = 22, B = 56;
+  const svg = el('svg', { viewBox:`0 0 ${W} ${H}`, width:'100%', role:'img',
+    'aria-label':'Distance to the competitive equilibrium against rung depth, log axes.' });
+  const ms = [2,3,4,5,6,8,10,13,16,20,25,30,40,50,65,80];
+  const data = ms.map(m => ({ m, ...supError(m) }));
+  const lx = Math.log10, XMIN = lx(2), XMAX = lx(80), YMIN = lx(3e-3), YMAX = lx(0.6);
+  const px = m => L + ((lx(m) - XMIN) / (XMAX - XMIN)) * (W - L - R);
+  const py = v => (H - B) - ((lx(v) - YMIN) / (YMAX - YMIN)) * (H - B - T);
+
+  [1e-2, 1e-1].forEach(v => {
+    svg.appendChild(el('line', { x1:L, y1:py(v), x2:W-R, y2:py(v), stroke:C.grid,
+      'stroke-width':1, opacity:0.35, 'stroke-dasharray':'2 4' }));
+    txt(svg, L - 10, py(v) + 5, C.mut, v === 1e-2 ? '0.01' : '0.1', 'end', 13);
+  });
+  [2,5,10,20,50,80].forEach(m => txt(svg, px(m), H - B + 22, C.mut, String(m), 'middle', 13));
+
+  // a slope-minus-one guide, pinned two-fold above the deepest rung so it stays clear of the data
+  const last = data[data.length - 1], guide = m => 2 * last.sup * (last.m / m);
+  let dr = '';
+  ms.forEach((m, i) => { dr += (i ? ' L' : 'M') + px(m).toFixed(2) + ' ' + py(guide(m)).toFixed(2); });
+  svg.appendChild(el('path', { d:dr, fill:'none', stroke:C.mut, 'stroke-width':1, 'stroke-dasharray':'5 5', opacity:0.7 }));
+
+  let ds = '', dd = '';
+  data.forEach((p, i) => {
+    ds += (i ? ' L' : 'M') + px(p.m).toFixed(2) + ' ' + py(p.sup).toFixed(2);
+    dd += (i ? ' L' : 'M') + px(p.m).toFixed(2) + ' ' + py(p.t).toFixed(2);
+  });
+  svg.appendChild(el('path', { d:dd, fill:'none', stroke:C.p2, 'stroke-width':2.6, 'stroke-dasharray':'2 7', opacity:0.95 }));
+  svg.appendChild(el('path', { d:ds, fill:'none', stroke:C.p1, 'stroke-width':2 }));
+  data.forEach(p => svg.appendChild(el('circle', { cx:px(p.m), cy:py(p.sup), r:2.6, fill:C.p1 })));
+
+  // a legend, parked in the empty bottom-left corner the three descending lines leave behind
+  [[C.p1, '', 2, 'distance to the limit'],
+   [C.p2, '2 7', 2.6, 'the dial t*(m) — all but on top of it'],
+   [C.mut, '5 5', 1, 'slope 1/m, for reference']
+  ].forEach(([col, dash, wd, label], i) => {
+    const yy = H - B - 62 + i * 20, x0 = px(2) + 6;
+    svg.appendChild(el('line', { x1:x0, y1:yy, x2:x0 + 26, y2:yy, stroke:col,
+      'stroke-width':wd, 'stroke-dasharray':dash, opacity:0.95 }));
+    txt(svg, x0 + 34, yy + 4, col, label, null, 13);
+  });
+  txt(svg, W - R, H - 8, C.mut, 'teeth per comb, m', 'end', 13);
+  host.innerHTML = ''; host.appendChild(svg);
+
+  const a = supError(10), b = supError(80);
+  document.getElementById('fig4readout').innerHTML =
+    `measured slope, m=10→80: <b>${(Math.log(b.sup/a.sup)/Math.log(8)).toFixed(3)}</b> (theory −1)` +
+    ` &nbsp;·&nbsp; at m=80 the distance is <b>${b.sup.toExponential(3)}</b>, the proved bound ` +
+    `<b>${(43*b.t).toExponential(3)}</b> &nbsp;·&nbsp; effective constant <b>${(b.sup/b.t).toFixed(3)}</b> against the proved <b>43</b>`;
+}
+
+/* ======================================================================
+   5. Appendix, contents, navigation
+   ====================================================================== */
+const ENTRIES = [
+  { id:'a-reach', title:'Reach w',
+    body:`<p>The effort whose cost exactly exhausts the prize,
+      <span class="fnmath" data-tex="w_i=c^{-1}(v_i)"></span>. Spending it and winning leaves
+      you with nothing; spending more is worse than not competing at all. So it caps every
+      equilibrium effort, and it is the right-hand end of every interval in this note. At the
+      symmetric point both contestants share one reach.</p>` },
+
+  { id:'a-competitive', title:'The competitive range',
+    body:`<p>The leads at which both contestants are still in the game,
+      <span class="fnmath" data-tex="-w_1<\\Delta<w_2"></span>. Outside it one contestant is so
+      far ahead that the other cannot profitably respond, and both exert zero effort.</p>` },
+
+  { id:'a-continuation', title:'Continuation value',
+    body:`<p>What the final round is worth to you as a function of the lead you carry into it.
+      The final round is a static contest with head starts and has a unique equilibrium, so this
+      is a well-defined function of the lead alone.</p>
+      <p>Two properties matter here. It is <span class="key">continuous</span>, which is why the
+      penultimate round is not an all-pay auction. And it is <span class="key">kinked</span> at
+      the lead where favourite and marginal player exchange roles — which, as section 2 shows,
+      is where the whole equilibrium set comes from.</p>` },
+
+  { id:'a-collusive', title:'Collusive equilibrium',
+    body:`<p>A pure-strategy equilibrium of the penultimate round, in which one contestant stays
+      inactive and the other takes the best payoff she can credibly hold. Rent dissipation is
+      minimal — the tacit-collusion outcome, and the opposite pole from the competitive
+      equilibrium.</p>
+      <p>They always take that shape: in any pure-strategy equilibrium at least one contestant
+      exerts zero effort, because in a deterministic profile somebody loses, and a loser's
+      payoff is <span class="fnmath" data-tex="-c(e)"></span>, best at
+      <span class="fnmath" data-tex="e=0"></span>. Whether one exists, and whether both
+      orientations do, depends on the lead and on how fast marginal cost rises; the paper
+      settles that with four explicit thresholds.</p>
+      <p>In the ladder of section 4 this is the first rung,
+      <span class="fnmath" data-tex="\\sigma(1,1)"></span>, with the dial pinned at
+      <span class="fnmath" data-tex="t=1"></span>.</p>` },
+
+  { id:'a-pole', title:'The competitive equilibrium',
+    body:`<p>The equilibrium in which both contestants draw effort from a continuous
+      distribution and both earn exactly zero. The name is by analogy with Bertrand competition:
+      rent dissipation is total.</p>
+      <p>It exists, and is unique among atomless profiles, for every cost in the class — sections
+      5 and 6 build it from the integral equation. The closed form is special to integer power
+      costs; the object is not.</p>` },
+
+  { id:'a-atom', title:'Atom',
+    body:`<p>A single effort level played with strictly positive probability — a vertical jump in
+      the distribution function. The ranked equilibria are built entirely of atoms, which is why
+      they look like combs.</p>` },
+
+  { id:'a-atomless', title:'Atomless',
+    body:`<p>Having no atoms at all: every single effort level has probability zero, and the
+      distribution function is continuous. The competitive equilibrium is atomless, and that is
+      exactly the property under which it is unique.</p>` },
+
+  { id:'a-density', title:'Density',
+    body:`<p>A function <span class="fnmath" data-tex="g\\ge0"></span> whose integral over an
+      interval gives the probability of landing in it. Equation (D) is an equation for the
+      competitive equilibrium's density, and it is the form most of the work is done in.</p>` },
+
+  { id:'a-cdf', title:'Distribution function',
+    body:`<p><span class="fnmath" data-tex="F(s)=\\mathbb P(\\text{effort}\\le s)"></span>:
+      nondecreasing, running from 0 to 1, jumping by exactly the mass of any atom. A comb's is a
+      staircase; the competitive one is a smooth curve flattening at 1.</p>
+      <p>The point of sections 4 and 5 is that the equilibrium conditions, which look like
+      statements about individual atoms, are a single statement about this function.</p>` },
+
+  { id:'a-dial', title:'The dial t',
+    body:`<p>The mass contestant 2 places on zero effort. It is the one free parameter of the
+      march: fix it and every later atom and mass is determined, so closing the masses at one
+      becomes a single scalar equation in a single unknown.</p>
+      <p>Down the ladder the dial shrinks like
+      <span class="fnmath" data-tex="1/(2m)"></span>, and that is also the rate at which the
+      ranked equilibria approach the competitive one.</p>` },
+
+  { id:'a-march', title:'The march',
+    body:`<p>The forward recursion that builds a comb from the dial: two alternating steps, one
+      per contestant, each using that contestant's first-order condition together with her
+      indifference across her own support.</p>
+      <p>It runs forever and knows nothing about equilibrium — the masses it generates keep
+      accumulating past one. An equilibrium is a place to stop it, and the two ways of stopping
+      give <span class="fnmath" data-tex="\\sigma(m,m)"></span> and
+      <span class="fnmath" data-tex="\\sigma(m,m{+}1)"></span>.</p>
+      <p>Section 4 also restates it without the atom-by-atom bookkeeping: both of each step's
+      conditions are statements about the marginal return, which vanishes at your own atoms and
+      integrates to zero between them.</p>` },
+
+  { id:'a-volterra', title:'Volterra equation of the second kind',
+    body:`<p>An equation for an unknown function in which the unknown appears both alone and
+      under an integral whose <span class="key">upper limit is the point of evaluation</span>:</p>
+      <div class="eq" data-tex="\\Phi(x)\\;=\\;f(x)\\;+\\;\\int_0^{x}K(x,y)\\,\\Phi(y)\\,dy ."></div>
+      <p>"Second kind" means the unknown also appears outside the integral. "Volterra", as
+      against Fredholm, means the upper limit moves with
+      <span class="fnmath" data-tex="x"></span> rather than being fixed.</p>
+      <p><span class="key">Why that matters.</span> A Fredholm equation may have no solution or
+      many, depending on whether its kernel has an eigenvalue at 1. A Volterra equation never
+      does: since <span class="fnmath" data-tex="\\Phi(x)"></span> depends only on values
+      strictly below <span class="fnmath" data-tex="x"></span>, it is a forward recursion, and
+      for a continuous kernel it has exactly one continuous solution, always, with no side
+      conditions.</p>
+      <p>The economist's analogy: a Fredholm equation is a fixed point where everything depends
+      on everything; a Volterra equation is a recursive problem with a well-ordered state.</p>` },
+
+  { id:'a-neumann', title:'Neumann series',
+    body:`<p>Writing the integral operator as
+      <span class="fnmath" data-tex="\\mathcal K"></span>, the equation is
+      <span class="fnmath" data-tex="\\Phi=f+\\mathcal K\\Phi"></span> and formally
+      <span class="fnmath" data-tex="\\Phi=\\sum_{n\\ge0}\\mathcal K^{n}f"></span> — the operator
+      version of <span class="fnmath" data-tex="1/(1-z)=\\sum z^n"></span>.</p>
+      <p>For a Fredholm operator that converges only if the kernel is small. For a Volterra
+      operator it converges always, because iterating a triangular integral shrinks the domain
+      each time:</p>
+      <div class="eq" data-tex="\\|\\mathcal K^{n}f\\|_\\infty\\;\\le\\;\\|f\\|_\\infty\\,\\frac{(\\kappa x)^n}{n!}."></div>
+      <p>The factorial is the point: faster than any geometric rate, for any kernel whatsoever.
+      And when the kernel is nonnegative — as here, since
+      <span class="fnmath" data-tex="c''>0"></span> — every term is nonnegative, which is what
+      makes the solution a genuine nondecreasing distribution function.</p>` },
+
+  { id:'a-gronwall', title:"Grönwall's inequality",
+    body:`<p>The standard device for turning "the error here is bounded by the accumulated errors
+      below it, plus something small" into an explicit bound. Discretely: if</p>
+      <div class="eq" data-tex="u_k\\;\\le\\;\\alpha+\\sum_{l<k}\\beta_l u_l,\\qquad \\alpha,\\beta_l\\ge0,"></div>
+      <p>then
+      <span class="fnmath" data-tex="u_k\\le\\alpha\\exp\\bigl(\\sum_{l<k}\\beta_l\\bigr)"></span>.
+      Here <span class="fnmath" data-tex="\\alpha"></span> is the one-cell wobble of the smooth
+      curve and the exponent is bounded by the interval length times the kernel's supremum — a
+      constant of the cost, not something growing with depth, which is why the final bound is
+      proportional to the mesh.</p>` },
+
+  { id:'a-mesh', title:'Mesh',
+    body:`<p>The largest gap between consecutive points of the merged set of both contestants'
+      atoms. A fine mesh means the comb's teeth are close together.</p>
+      <p>The convergence result is stated in terms of the mesh, and the model supplies the link
+      back to masses: no gap can be wide unless some atom is fat. Whether the masses really do
+      shrink along the ladder is proved at the quadratic and open in general.</p>` },
+
+  { id:'a-kolmogorov', title:'Kolmogorov distance',
+    body:`<p>The largest vertical gap between two distribution functions,
+      <span class="fnmath" data-tex="\\sup_x|F(x)-G(x)|"></span>. It is the strongest of the
+      usual distances here: bounding it also bounds the Lévy distance (hence convergence in
+      distribution) and, on a bounded interval, the Wasserstein-1 distance
+      <span class="fnmath" data-tex="\\int|F-G|"></span>. One estimate delivers all three.</p>` },
+
+  { id:'a-collocation', title:'Collocation',
+    body:`<p>A way of solving a functional equation approximately: instead of demanding it hold
+      everywhere, pick finitely many points — the <span class="em">collocation nodes</span> —
+      require the equation to hold there only, and solve the resulting finite system exactly.
+      Economists meet it as a projection method with the residual zeroed at chosen grid
+      points.</p>
+      <p><span class="key">Here the nodes are unknowns.</span> The evaluation points are the
+      rival's atoms, which the march solves for jointly with the masses. That is what
+      "free-node" means, and it is why no textbook refinement theorem applies: those assume a
+      mesh you control, and here the mesh is an output of the system being solved.</p>` },
+
+  { id:'a-gate', title:'The gate',
+    body:`<p>Closing the masses at one makes a profile a candidate. It is an equilibrium only if
+      neither contestant gains by deviating — in particular by jumping above the top of the
+      support. That check is the gate, and it reduces to the sign of a single quantity the march
+      already computes.</p>
+      <p>So "solve the equation" and "find an equilibrium" are different operations here, and the
+      sign of that quantity — the collocation residual of section 8 — is the open question rather
+      than a bookkeeping detail.</p>` },
+
+  { id:'a-bigO', title:'What a rate of O(1/m) claims',
+    body:`<p>That there is a constant <span class="fnmath" data-tex="K"></span>, independent of
+      <span class="fnmath" data-tex="m"></span>, with the error at most
+      <span class="fnmath" data-tex="K/m"></span> for large
+      <span class="fnmath" data-tex="m"></span>: doubling the teeth halves the distance.</p>
+      <p>Two cautions. The constant here is explicit but generous —
+      <span class="fnmath" data-tex="2e^3+e<43"></span>, about two orders above the measured gap
+      in figure 5. And a rate is a statement about <span class="em">size</span>, while the open
+      question of section 8 is about a <span class="em">sign</span>; a bound that loose cannot
+      decide one.</p>` }
+];
+
+function buildAppendix() {
+  const host = document.getElementById('entries'); if (!host) return;
+  ENTRIES.forEach(e => {
+    const div = document.createElement('div');
+    div.className = 'entry'; div.id = e.id;
+    div.innerHTML = `<h3>${e.title}</h3>${e.body}` +
+      `<div class="entry-foot"><button class="backbtn" type="button" data-back hidden></button>` +
+      `<span class="usedin" data-usedin></span></div>`;
+    host.appendChild(div);
+  });
+  // these nodes are created after renderAllMath, so they must be typeset here
+  host.querySelectorAll('.eq[data-tex]').forEach(n => {
+    try { katex.render(n.dataset.tex, n, { displayMode:true, throwOnError:false }); }
+    catch (e) { n.textContent = n.dataset.tex; }
+  });
+  renderFnMath(host);
+
+  const map = {};
+  document.querySelectorAll('a.term').forEach(a => {
+    const sec = a.closest('section.chapter'); if (!sec) return;
+    const no = sec.querySelector('.secno');
+    const key = a.getAttribute('href').slice(1);
+    (map[key] = map[key] || []).push({ id: sec.id, label: no ? no.textContent.trim() : sec.id });
+  });
+  Object.entries(map).forEach(([target, secs]) => {
+    const h = document.querySelector(`#${CSS.escape(target)} [data-usedin]`); if (!h) return;
+    const seen = new Set();
+    h.innerHTML = 'used in ' + secs.filter(s => !seen.has(s.label) && seen.add(s.label))
+      .map(s => `<a href="#${s.id}">§${s.label}</a>`).join(', ');
+  });
+}
+
+function buildContents() {
+  const list = document.getElementById('toclist'); if (!list) return;
+  document.querySelectorAll('section.chapter').forEach(sec => {
+    const h = sec.querySelector('h2'); if (!h) return;
+    const no = h.querySelector('.secno');
+    const label = no ? no.textContent.trim() : '';
+    const li = document.createElement('li');
+    li.innerHTML = `<span class="n">${label}</span><a href="#${sec.id}">${h.textContent.replace(label, '').trim()}</a>`;
+    list.appendChild(li);
+  });
+}
+
+/* ---- there and back again ---- */
+const jumpStack = [];
+let markCounter = 0;
+const reduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const secLabel = n => {
+  const s = n && n.closest('section.chapter'); if (!s) return null;
+  const no = s.querySelector('.secno'); return no ? no.textContent.trim() : null;
+};
+
+function updateReturnUI() {
+  const bar = document.getElementById('returnbar');
+  const top = jumpStack[jumpStack.length - 1];
+  const label = top ? secLabel(document.getElementById(top)) : null;
+  const text = label ? `Back to §${label}` : 'Back to where you were';
+  if (!top) { bar.hidden = true; bar.classList.remove('show'); }
+  else { bar.textContent = text; bar.hidden = false; requestAnimationFrame(() => bar.classList.add('show')); }
+  document.querySelectorAll('.entry [data-back]').forEach(b => { b.hidden = !top; if (top) b.textContent = text; });
+}
+
+document.addEventListener('click', ev => {
+  const term = ev.target.closest('a.term');
+  if (term) {
+    ev.preventDefault();
+    if (!term.id) term.id = 'mark-' + (++markCounter);
+    jumpStack.push(term.id); updateReturnUI();
+    const t = document.getElementById(term.getAttribute('href').slice(1));
+    if (t) t.scrollIntoView({ behavior: reduced() ? 'auto' : 'smooth', block:'start' });
+    return;
+  }
+  if (ev.target.closest('[data-back], #returnbar')) {
+    ev.preventDefault();
+    const id = jumpStack.pop(); updateReturnUI();
+    const o = id && document.getElementById(id); if (!o) return;
+    o.scrollIntoView({ behavior: reduced() ? 'auto' : 'smooth', block:'center' });
+    o.classList.remove('flash'); void o.offsetWidth; o.classList.add('flash');
+  }
+});
+
+/* ---- chrome ---- */
+function initChrome() {
+  const bar = document.getElementById('topbar'), prog = document.getElementById('progress'),
+        where = document.getElementById('whereami'),
+        heroH = document.querySelector('.hero').offsetHeight,
+        secs = [...document.querySelectorAll('section.chapter')];
+  const onScroll = () => {
+    const y = window.scrollY;
+    bar.classList.toggle('show', y > heroH * 0.7);
+    const max = document.documentElement.scrollHeight - window.innerHeight;
+    prog.style.width = max > 0 ? `${Math.min(100, y / max * 100)}%` : '0%';
+    let cur = null;
+    for (const s of secs) if (s.getBoundingClientRect().top <= 120) cur = s;
+    if (cur) {
+      const h = cur.querySelector('h2'), no = h.querySelector('.secno');
+      const l = no ? no.textContent.trim() : '';
+      where.textContent = `§${l} · ${h.textContent.replace(l, '').trim()}`;
+    } else where.textContent = 'The Competitive Equilibrium';
+  };
+  window.addEventListener('scroll', onScroll, { passive:true });
+  onScroll();
+}
+
+function initFig1() {
+  const btns = [...document.querySelectorAll('#fig1 .controls button')];
+  const pick = v => {
+    btns.forEach(b => b.setAttribute('aria-pressed', String(Math.abs(+b.dataset.e2 - v) < 1e-7)));
+    drawFig1(v);
+  };
+  btns.forEach(b => b.addEventListener('click', () => pick(+b.dataset.e2)));
+  if (reduced()) { pick(0.30); return; }
+  // one orchestrated reveal: the interior peak sinks until it loses
+  const seq = [0.15, 0.30, 0.41421356, 0.55];
+  let i = 0, done = false; pick(seq[0]);
+  new IntersectionObserver(es => es.forEach(e => {
+    if (!e.isIntersecting || done) return;
+    done = true;
+    const tick = () => { if (++i >= seq.length) return; pick(seq[i]); setTimeout(tick, 750); };
+    setTimeout(tick, 650);
+  }), { threshold: 0.35 }).observe(document.getElementById('fig1'));
+}
+
+function initFigM() {
+  const btns = [...document.querySelectorAll('#figM .controls button')];
+  const pick = v => { btns.forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.th === v)));
+                      drawFigM(v); };
+  btns.forEach(b => b.addEventListener('click', () => pick(+b.dataset.th)));
+  pick(3);
+}
+
+function boot() {
+  renderAllMath(); drawCombRules(); buildContents(); buildAppendix();
+  updateReturnUI(); initChrome();
+  initFig1(); drawFig2(); initFigM(); drawFig3(); drawFig4();
+
+  const t3 = closeDial(Qtot, 3), m3 = qMasses(t3, 3);
+  console.log('%cThe Competitive Equilibrium — self-checks', 'color:#D07852');
+  console.log('q1 must equal the dial exactly:', m3.q[0], 'vs', t3, '| diff', Math.abs(m3.q[0] - t3));
+  console.log('sigma(3,3) masses sum to', m3.q.reduce((a, b) => a + b, 0));
+  console.log('cut-off at theta=2:', poleTop(2, 6000), 'vs ln2 =', Math.LN2);
+  console.log('cut-off at theta=3:', poleTop(3, 6000), 'vs pi/4 =', Math.PI / 4);
+  console.log('sigma(1,2) rent:', rent(closeDial(Ptot, 1)), '= 1 - 1/sqrt(2) =', 1 - 1 / Math.SQRT2);
+  console.log('dial at m=30:', closeDial(Qtot, 30), 'vs 1/(2m-1.5) =', 1 / 58.5);
+  const tg = dialSquareGen(2, 3);
+  console.log('general march at theta=2 must match the closed form:', tg, 'vs', closeDial(Qtot, 3),
+              '| diff', Math.abs(tg - closeDial(Qtot, 3)));
+  [2, 2.5, 3, 4].forEach(th => { const t = dialSquareGen(th, 3), r = marchGen(th, t, 3);
+    const R = marginal(th, r.y, r.q);
+    console.log('  theta=' + th, 'dial', t.toFixed(10), 'sum q', r.q.reduce((a,b)=>a+b,0).toFixed(12),
+                'max |R(x_k)|', Math.max(...r.x.map(v => Math.abs(R(v)))).toExponential(2)); });
+}
+
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
+else boot();
+</script>
+</body>
+</html>

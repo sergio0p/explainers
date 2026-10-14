@@ -1,0 +1,630 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Collusive Equilibria</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,500;0,600;1,400&display=swap" rel="stylesheet">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<style>
+/* Identity: the Comb March Solver (tortoise.soparreiras.org) — olive palette, Spectral title,
+   comb-teeth rule.  Region colors are the paper figure's blue / green / red, toned to sit
+   beside the olive. */
+:root {
+    color-scheme: light;
+    --olive-dark:   #3D421A;
+    --olive-bright: #6B8E23;
+    --olive-soft:   #F4F5EE;
+    --ink:          #212529;
+    --muted:        #6a6a5a;
+    --hair:         #e1e3d7;
+    --rule:         #d4d8b6;
+    --blue-fill:    #cbd8ec;
+    --blue-ink:     #2f4a78;
+    --green-fill:   #d3e6bd;
+    --green-ink:    #3f5d1e;
+    --red-fill:     #f1cfc8;
+    --red-ink:      #8b3a3a;
+    --stipple:      #a3a690;
+    --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans",
+            "Liberation Sans", Arial, sans-serif;
+    --serif: "Spectral", Georgia, "Times New Roman", serif;
+    --math: KaTeX_Main, "Times New Roman", serif;
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+    margin: 0;
+    background: #fff;
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 1rem;
+    line-height: 1.5;
+}
+.wrap { max-width: 1100px; margin: 0 auto; padding: 2rem 16px 2.5rem; }
+
+/* ---- brand header (as on the solver) ---- */
+.page-head { margin-bottom: 1.25rem; }
+.brand-title {
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: 2.6rem;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    color: var(--olive-dark);
+    margin: 0 0 0.35rem;
+}
+.paper-sub { margin: 0; line-height: 1.35; }
+.paper-title {
+    display: block;
+    text-transform: uppercase;
+    letter-spacing: 0.13em;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--olive-bright);
+}
+.paper-by {
+    display: block;
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 0.95rem;
+    color: var(--muted);
+    margin-top: 0.15rem;
+}
+.comb-rule {
+    height: 22px;
+    margin-top: 0.9rem;
+    border-bottom: 1.5px solid var(--olive-dark);
+    background:
+        repeating-linear-gradient(90deg,
+            var(--olive-dark) 0 2.5px, transparent 2.5px 34px)
+            left bottom / 100% 20px no-repeat,
+        repeating-linear-gradient(90deg,
+            transparent 0 17px, var(--olive-bright) 17px 19px, transparent 19px 34px)
+            left bottom / 100% 9px no-repeat;
+}
+
+.lede { max-width: 68ch; margin: 1.4rem 0 1.6rem; }
+
+h2 {
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: 1.35rem;
+    line-height: 1.25;
+    color: var(--olive-dark);
+    margin: 0 0 0.75rem;
+}
+i.m { font-family: var(--math); font-size: 1.06em; }
+
+/* ---- widget: map is the figure, the side panel drives it ---- */
+.widget {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    grid-template-rows: auto 1fr;
+    grid-template-areas: "map controls" "map legend";
+    gap: 1.1rem 1.5rem;
+    align-items: start;
+}
+.map      { grid-area: map; margin: 0; }
+.controls { grid-area: controls; }
+.legend   { grid-area: legend; }
+
+.card {
+    background: #fff;
+    border: 1px solid var(--hair);
+    border-left: 4px solid var(--olive-bright);
+    border-radius: 0.5rem;
+    padding: 1.1rem 1.25rem;
+}
+
+/* ---- sliders ---- */
+.ctl + .ctl { margin-top: 1rem; }
+.ctl-head { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; }
+.ctl label { font-weight: 600; color: var(--olive-dark); }
+.ctl output {
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+    color: var(--olive-dark);
+    min-width: 3.2em;
+    text-align: right;
+}
+.ctl input[type=range] {
+    width: 100%;
+    margin: 0.35rem 0 0;
+    accent-color: var(--olive-bright);
+}
+.ctl input[type=range]:focus-visible { outline: 3px solid var(--olive-bright); outline-offset: 3px; }
+.reset {
+    margin-top: 1.1rem;
+    font: inherit;
+    font-size: 0.9rem;
+    color: var(--olive-dark);
+    background: var(--olive-soft);
+    border: 1px solid #c9d39a;
+    border-radius: 999px;
+    padding: 0.25rem 0.85rem;
+    cursor: pointer;
+}
+.reset:hover { background: var(--olive-bright); border-color: var(--olive-bright); color: #fff; }
+.reset:focus-visible { outline: 3px solid var(--olive-bright); outline-offset: 2px; }
+
+/* ---- region legend ---- */
+.region-list { list-style: none; margin: 0; padding: 0; }
+.region-list li {
+    display: grid;
+    grid-template-columns: 26px minmax(0, 1fr);
+    gap: 0.7rem;
+    align-items: start;
+    padding: 0.6rem 0;
+    border-top: 1px solid var(--rule);
+}
+.region-list li:first-child { border-top: 0; padding-top: 0.1rem; }
+.sw { width: 26px; height: 18px; margin-top: 0.15rem; border-radius: 3px; border: 1px solid rgba(0,0,0,.18); }
+.sw.blue  { background: var(--blue-fill); }
+.sw.green { background: var(--green-fill); }
+.sw.red   { background: var(--red-fill); }
+.sw.none  { background: #fff; border-color: #b9bda4; }
+.region-name { display: block; font-weight: 600; line-height: 1.3; }
+.region-list li.blue  .region-name { color: var(--blue-ink); }
+.region-list li.green .region-name { color: var(--green-ink); }
+.region-list li.red   .region-name { color: var(--red-ink); }
+.region-list li.none  .region-name { color: var(--ink); }
+.region-sub { display: block; font-size: 0.85rem; color: var(--muted); }
+.where {
+    display: block;
+    margin-top: 0.15rem;
+    font-size: 0.9rem;
+    font-variant-numeric: tabular-nums;
+    color: var(--ink);
+}
+.region-list li.is-empty .sw { background: #fff; border: 1.5px dashed #b9bda4; }
+.region-list li.is-empty .region-name { color: var(--muted); }
+.region-list li.is-empty .where { color: var(--muted); font-style: italic; }
+.note {
+    margin: 0.8rem 0 0;
+    padding: 0.55rem 0.75rem;
+    background: var(--olive-soft);
+    border-radius: 0.35rem;
+    font-size: 0.88rem;
+    color: var(--olive-dark);
+}
+
+/* ---- map ---- */
+#map { width: 100%; height: auto; display: block; }
+.map figcaption { margin-top: 0.5rem; font-size: 0.88rem; color: var(--muted); max-width: 80ch; }
+
+/* svg classes */
+.f-blue  { fill: var(--blue-fill); }
+.f-green { fill: var(--green-fill); }
+.f-red   { fill: var(--red-fill); }
+.lbl     { font-family: var(--math); font-size: 15px; fill: var(--olive-dark); }
+.tick    { font-family: var(--sans); font-size: 12px; fill: var(--muted); font-variant-numeric: tabular-nums; }
+.msg     { font-family: var(--sans); font-size: 15px; fill: var(--muted); }
+
+/* ---- formulas ---- */
+.defs { margin-top: 2.6rem; max-width: 72ch; }
+.defs p { margin: 0 0 0.9rem; }
+.defs .katex-display { margin: 0.6rem 0 1rem; overflow-x: auto; overflow-y: hidden; }
+
+footer {
+    margin-top: 3rem;
+    padding-top: 1.2rem;
+    border-top: 1px solid #dee2e6;
+    text-align: center;
+    color: #666;
+    font-size: 0.95rem;
+}
+
+@media (max-width: 900px) {
+    .widget {
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: none;
+        grid-template-areas: "controls" "map" "legend";
+    }
+}
+@media (max-width: 575px) {
+    .brand-title { font-size: 2rem; }
+    .paper-title { font-size: 0.66rem; letter-spacing: 0.1em; }
+    .card { padding: 1rem; }
+    .defs .katex-display > .katex { font-size: 1.02em; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+    <header class="page-head">
+        <h1 class="brand-title">Collusive equilibria with power costs</h1>
+        <p class="paper-sub">
+            <span class="paper-title">A Theory of Dynamic Contests with Deadlines and Effort Smoothing</span>
+            <span class="paper-by">Joffrion &amp; Parreiras, 2026</span>
+        </p>
+        <div class="comb-rule" aria-hidden="true"></div>
+    </header>
+
+    <p class="lede">
+        In a collusive equilibrium one player builds a lead in the penultimate round while the
+        other rests. With effort costs <i class="m">c</i>(<i class="m">e</i>) = <i class="m">e</i><sup><i class="m">θ</i></sup>,
+        the map shows, for each exponent <i class="m">θ</i> from 1 up to a bound you choose and each head start <i class="m">Δ</i> of
+        player A, which player can be the one who leads. Change the values to see regions shrink
+        or vanish.
+    </p>
+
+    <div class="widget">
+
+        <figure class="map">
+            <svg id="map" viewBox="0 0 760 480" role="img"
+                 aria-label="Regions of collusive equilibria over the cost exponent θ, from 1 to the chosen upper end, and the head start Δ"></svg>
+            <figcaption>
+                Solid curves are participation thresholds (IR); dashed curves are no-catch-up
+                thresholds (IC). Stippled bands lie outside the contested range
+                −<i class="m">w</i><sub>A</sub> ≤ <i class="m">Δ</i> ≤ <i class="m">w</i><sub>B</sub>,
+                where the lead is decisive and both rest. The dotted line marks
+                <i class="m">θ</i>*.
+            </figcaption>
+        </figure>
+
+            <section class="controls card" aria-label="Values">
+                <div class="ctl">
+                    <div class="ctl-head">
+                        <label for="thMax">Show <i class="m">θ</i> up to</label>
+                        <output id="thMaxOut" for="thMax"></output>
+                    </div>
+                    <input id="thMax" type="range" min="1.5" max="20" step="0.1" value="3">
+                </div>
+                <div class="ctl">
+                    <div class="ctl-head">
+                        <label for="vA">Value to A, <i class="m">v</i><sub>A</sub></label>
+                        <output id="vAOut" for="vA"></output>
+                    </div>
+                    <input id="vA" type="range" min="0" max="1" step="0.01" value="1">
+                </div>
+                <div class="ctl">
+                    <div class="ctl-head">
+                        <label for="vB">Value to B, <i class="m">v</i><sub>B</sub></label>
+                        <output id="vBOut" for="vB"></output>
+                    </div>
+                    <input id="vB" type="range" min="0" max="1" step="0.01" value="0.9">
+                </div>
+                <button id="reset" class="reset" type="button">Use the paper's example</button>
+            </section>
+
+            <section class="legend card" aria-label="Regions">
+                <ul class="region-list" aria-live="polite">
+                    <li class="blue" id="rowBlue">
+                        <span class="sw blue" aria-hidden="true"></span>
+                        <span><span class="region-name">Only A leads</span>
+                            <span class="region-sub">B rests; A plays (<i class="m">w</i><sub>B</sub> − <i class="m">Δ</i>)/2</span>
+                            <span class="where"></span></span>
+                    </li>
+                    <li class="green" id="rowGreen">
+                        <span class="sw green" aria-hidden="true"></span>
+                        <span><span class="region-name">Either player leads</span>
+                            <span class="region-sub">two pure-strategy equilibria</span>
+                            <span class="where"></span></span>
+                    </li>
+                    <li class="red" id="rowRed">
+                        <span class="sw red" aria-hidden="true"></span>
+                        <span><span class="region-name">Only B leads</span>
+                            <span class="region-sub">A rests; B plays (<i class="m">w</i><sub>A</sub> + <i class="m">Δ</i>)/2</span>
+                            <span class="where"></span></span>
+                    </li>
+                    <li class="none" id="rowNone">
+                        <span class="sw none" aria-hidden="true"></span>
+                        <span><span class="region-name">No pure-strategy equilibrium</span>
+                            <span class="region-sub">neither player can lead while the other rests</span>
+                            <span class="where"></span></span>
+                    </li>
+                </ul>
+                <p class="note">
+                    Green never reaches past <i class="m">θ</i>* = ln 2 / ln(4/3) ≈ 2.409,
+                    whatever the values.
+                </p>
+            </section>
+    </div>
+
+    <section class="defs">
+        <h2>Where the regions come from</h2>
+        <p>
+            Write \(w_i = c^{-1}(v_i)\) for player \(i\)'s reach in one round and
+            \(w^i_2 = c^{-1}(v_i/2)\) for the effort per round at which two rounds cost \(v_i\).
+            The four thresholds are
+        </p>
+        $$\begin{aligned}
+            \mathit{IR}_A &= w_B - 2w^A_2, \\
+            \mathit{IC}_B &= 4w^B_2 - 2w_A - w_B, \\
+            \mathit{IR}_B &= 2w^B_2 - w_A, \\
+            \mathit{IC}_A &= 2w_B + w_A - 4w^A_2.
+        \end{aligned}$$
+        <p>
+            On the contested range \(-w_A \le \Delta \le w_B\), the profile
+            \(\bigl(\tfrac{w_B-\Delta}{2},\,0\bigr)\) with A active is an equilibrium exactly when
+            \(\Delta \ge \max(\mathit{IR}_A, \mathit{IC}_B)\): A gains from building the lead and B
+            prefers resting to catching up. The profile \(\bigl(0,\,\tfrac{w_A+\Delta}{2}\bigr)\) with
+            B active is an equilibrium exactly when \(\Delta \le \min(\mathit{IR}_B, \mathit{IC}_A)\).
+            Blue, green and red are where the first, both, or the second hold; white is where
+            neither does, so there is no pure-strategy equilibrium.
+        </p>
+        <p>
+            With \(c(e) = e^\theta\) one has \(w^i_2 = 2^{-1/\theta} w_i\), so
+        </p>
+        $$\mathit{IC}_A - \mathit{IC}_B = (w_A + w_B)\bigl(3 - 4\cdot 2^{-1/\theta}\bigr),$$
+        <p>
+            which changes sign at \(\theta^\ast = \ln 2/\ln(4/3) \approx 2.409\) whatever the values.
+            Beyond \(\theta^\ast\) the two conditions cannot hold together, so green is empty: with
+            costs that convex, at most one player can lead collusively.
+        </p>
+    </section>
+
+    <footer>Tortoise research — UNC Economics</footer>
+</div>
+
+<script>
+(() => {
+    const NS = 'http://www.w3.org/2000/svg';
+    const TH0 = 1;
+    let TH1 = 3;                       // the slider's upper end of the θ axis
+    const THSTAR = Math.LN2 / Math.log(4 / 3);
+    const PAPER = { vA: 1, vB: 0.9, thMax: 3 };
+    const EPS = 1e-9;
+    const $ = (id) => document.getElementById(id);
+    const st = { vA: PAPER.vA, vB: PAPER.vB, thMax: PAPER.thMax };
+    // A state can be linked as #vA=0.3&vB=1&th=8.
+    const hash = new URLSearchParams(location.hash.slice(1));
+    for (const [k, h, lo, hi] of [['vA', 'vA', 0, 1], ['vB', 'vB', 0, 1], ['thMax', 'th', 1.5, 20]]) {
+        const v = parseFloat(hash.get(h));
+        if (Number.isFinite(v)) st[k] = Math.min(hi, Math.max(lo, v));
+    }
+
+    const clamp = (x, a, b) => Math.min(b, Math.max(a, x));
+    const fmt = (x, n = 2) => {
+        const s = Math.abs(x).toFixed(n);
+        return (x < 0 && Number(s) !== 0 ? '−' : '') + s;
+    };
+
+    function el(tag, attrs, parent, text) {
+        const e = document.createElementNS(NS, tag);
+        for (const k in attrs) e.setAttribute(k, attrs[k]);
+        if (text != null) e.textContent = text;
+        if (parent) parent.appendChild(e);
+        return e;
+    }
+
+    // Thresholds and the partition of [-wA, wB] at one exponent.
+    function model(th, vA, vB) {
+        const p = 1 / th;
+        const wA = Math.pow(vA, p), wB = Math.pow(vB, p);
+        const w2A = Math.pow(vA / 2, p), w2B = Math.pow(vB / 2, p);
+        const IRA = wB - 2 * w2A, ICB = 4 * w2B - 2 * wA - wB;
+        const IRB = 2 * w2B - wA, ICA = 2 * wB + wA - 4 * w2A;
+        const a = clamp(Math.max(IRA, ICB), -wA, wB);   // A active is an equilibrium for Δ ≥ a
+        const b = clamp(Math.min(IRB, ICA), -wA, wB);   // B active is an equilibrium for Δ ≤ b
+        return { wA, wB, IRA, ICB, IRB, ICA, a, b };
+    }
+    // Height of each region at one exponent.
+    const HEIGHT = {
+        blue:  (m) => m.wB - Math.max(m.a, m.b),
+        green: (m) => m.b - m.a,
+        red:   (m) => Math.min(m.a, m.b) + m.wA,
+        none:  (m) => m.a - m.b,
+    };
+
+    // The exponents where a region has positive height, as maximal intervals.
+    function support(key) {
+        const on = (th) => HEIGHT[key](model(th, st.vA, st.vB)) > EPS;
+        const edge = (x, y) => {
+            const fx = on(x);
+            for (let k = 0; k < 60; k++) { const mid = (x + y) / 2; if (on(mid) === fx) x = mid; else y = mid; }
+            return (x + y) / 2;
+        };
+        const flags = GRID.map(on), out = [];
+        for (let i = 0; i <= N; i++) {
+            if (!flags[i]) continue;
+            let j = i;
+            while (j < N && flags[j + 1]) j++;
+            out.push([i === 0 ? TH0 : edge(GRID[i - 1], GRID[i]), j === N ? TH1 : edge(GRID[j], GRID[j + 1])]);
+            i = j;
+        }
+        return out;
+    }
+
+    const CURVES = [
+        { key: 'IRA', name: 'IR', sub: 'A', dash: null },
+        { key: 'ICB', name: 'IC', sub: 'B', dash: '7 5' },
+        { key: 'IRB', name: 'IR', sub: 'B', dash: null },
+        { key: 'ICA', name: 'IC', sub: 'A', dash: '7 5' },
+    ];
+
+    function mathText(parent, x, y, name, sub) {
+        const t = el('text', { x, y, class: 'lbl' }, parent);
+        el('tspan', { 'font-style': 'italic' }, t, name);
+        el('tspan', { dy: 4, 'font-size': '11' }, t, sub);
+        return t;
+    }
+
+    // Spread label positions so none sit closer than `gap`, inside [lo, hi].
+    function spread(items, gap, lo, hi) {
+        items.sort((p, q) => p.y - q.y);
+        for (let i = 0; i < items.length; i++) {
+            items[i].ly = Math.max(items[i].y, i ? items[i - 1].ly + gap : lo);
+        }
+        for (let i = items.length - 1; i >= 0; i--) {
+            const cap = i === items.length - 1 ? hi : items[i + 1].ly - gap;
+            items[i].ly = Math.min(items[i].ly, cap);
+        }
+        return items;
+    }
+
+    // ---------- the map ----------
+    // Its viewBox follows the rendered width, so labels keep their size on a phone.
+    const ML = { l: 68, r: 64, t: 28, b: 50 };
+    let MW = 760, MH = 480, PW = 0, PH = 0;
+    const N = 400;
+    let GRID = [];
+    function setDomain() {
+        TH1 = st.thMax;
+        GRID = Array.from({ length: N + 1 }, (_, i) => TH0 + (TH1 - TH0) * i / N);
+    }
+    const mx = (th) => ML.l + (th - TH0) / (TH1 - TH0) * PW;
+
+    function niceStep(range) {
+        for (const s of [0.05, 0.1, 0.2, 0.25, 0.5, 1]) if (range / s <= 8) return s;
+        return 1;
+    }
+    const pts = (arr) => arr.map((p, i) => (i ? 'L' : 'M') + p[0].toFixed(1) + ',' + p[1].toFixed(1)).join('');
+    const back = (arr) => pts(arr).replace(/^M/, 'L');
+
+    function drawMap() {
+        const svg = $('map');
+        svg.textContent = '';
+        MW = Math.round(clamp(svg.getBoundingClientRect().width || 760, 320, 900));
+        MH = MW < 600 ? Math.round(MW * 0.95) : Math.round(MW * 0.62);
+        PW = MW - ML.l - ML.r; PH = MH - ML.t - ML.b;
+        svg.setAttribute('viewBox', `0 0 ${MW} ${MH}`);
+
+        const ms = GRID.map((th) => model(th, st.vA, st.vB));
+        const wBmax = Math.max(...ms.map((m) => m.wB)), wAmax = Math.max(...ms.map((m) => m.wA));
+        if (wAmax + wBmax < EPS) {
+            el('text', { x: MW / 2, y: MH / 2, class: 'msg', 'text-anchor': 'middle' }, svg,
+               'Both values are zero: there is no contest.');
+            return;
+        }
+        const pad = 0.07 * (wAmax + wBmax);
+        const Y1 = wBmax + pad, Y0 = -wAmax - pad;
+        const my = (d) => ML.t + (Y1 - d) / (Y1 - Y0) * PH;
+        const rev = GRID.map((_, i) => N - i);
+        const along = (f) => GRID.map((th, i) => [mx(th), my(f(ms[i]))]);
+        const alongBack = (f) => rev.map((i) => [mx(GRID[i]), my(f(ms[i]))]);
+        const x0 = mx(TH0), x1 = mx(TH1);
+
+        const defs = el('defs', {}, svg);
+        const pat = el('pattern', { id: 'stip', width: 6, height: 6, patternUnits: 'userSpaceOnUse' }, defs);
+        el('circle', { cx: 1.5, cy: 1.5, r: 0.9, fill: 'var(--stipple)' }, pat);
+        el('circle', { cx: 4.5, cy: 4.5, r: 0.9, fill: 'var(--stipple)' }, pat);
+        const cp = el('clipPath', { id: 'band' }, defs);
+        el('path', { d: pts(along((m) => m.wB)) + back(alongBack((m) => -m.wA)) + 'Z' }, cp);
+
+        // decisive leads, outside the contested range
+        el('path', { d: `M${x0},${ML.t}L${x1},${ML.t}` + back(alongBack((m) => m.wB)) + 'Z',
+                     fill: 'url(#stip)' }, svg);
+        el('path', { d: `M${x0},${ML.t + PH}L${x1},${ML.t + PH}` + back(alongBack((m) => -m.wA)) + 'Z',
+                     fill: 'url(#stip)' }, svg);
+
+        // regions; white is the background showing through
+        const poly = (topF, botF) => pts(along(topF)) + back(alongBack(botF)) + 'Z';
+        el('path', { d: poly((m) => m.wB, (m) => Math.max(m.a, m.b)), class: 'f-blue' }, svg);
+        el('path', { d: poly((m) => Math.max(m.a, m.b), (m) => m.a), class: 'f-green' }, svg);
+        el('path', { d: poly((m) => Math.min(m.a, m.b), (m) => -m.wA), class: 'f-red' }, svg);
+
+        // Δ = 0 and θ*
+        el('line', { x1: x0, x2: x1, y1: my(0), y2: my(0), stroke: 'var(--olive-dark)', 'stroke-width': 1,
+                     'stroke-dasharray': '1 3', 'stroke-linecap': 'round', opacity: 0.8 }, svg);
+        if (THSTAR <= TH1) {
+        el('line', { x1: mx(THSTAR), x2: mx(THSTAR), y1: ML.t, y2: ML.t + PH, stroke: 'var(--olive-dark)',
+                     'stroke-width': 1.2, 'stroke-dasharray': '1 4', 'stroke-linecap': 'round' }, svg);
+        const ts = el('text', { x: mx(THSTAR), y: ML.t - 8, class: 'lbl', 'text-anchor': 'middle' }, svg);
+        el('tspan', { 'font-style': 'italic' }, ts, 'θ');
+        el('tspan', { dy: -5, 'font-size': '11' }, ts, '*');
+        }
+
+        // threshold curves, clipped to the contested range
+        const g = el('g', { 'clip-path': 'url(#band)' }, svg);
+        for (const c of CURVES) {
+            const attrs = { d: pts(along((m) => m[c.key])), fill: 'none',
+                            stroke: 'var(--olive-dark)', 'stroke-width': 1.6 };
+            if (c.dash) attrs['stroke-dasharray'] = c.dash;
+            el('path', attrs, g);
+        }
+        const last = ms[N];
+        const labs = CURVES.filter((c) => last[c.key] >= -last.wA - EPS && last[c.key] <= last.wB + EPS)
+                           .map((c) => ({ c, y: my(last[c.key]) }));
+        spread(labs, 18, ML.t + 8, ML.t + PH);
+        for (const it of labs) mathText(svg, x1 + 8, it.ly + 5, it.c.name, it.c.sub);
+
+        // frame, ticks, axis names
+        el('rect', { x: x0, y: ML.t, width: PW, height: PH, fill: 'none', stroke: 'var(--olive-dark)',
+                     'stroke-width': 1 }, svg);
+        const thStep = [0.1, 0.25, 0.5, 1, 2, 5].find((s) => (TH1 - TH0) / s <= (MW < 600 ? 5 : 9)) || 5;
+        const thDec = thStep >= 1 ? 0 : (Math.abs(thStep * 10 - Math.round(thStep * 10)) < 1e-9 ? 1 : 2);
+        const thTicks = [];
+        for (let k = Math.ceil(TH0 / thStep - EPS); k * thStep <= TH1 + EPS; k++) thTicks.push(k * thStep);
+        if (thTicks[0] - TH0 > 0.4 * thStep) thTicks.unshift(TH0);
+        for (const th of thTicks) {
+            el('line', { x1: mx(th), x2: mx(th), y1: ML.t + PH, y2: ML.t + PH + 6,
+                         stroke: 'var(--olive-dark)' }, svg);
+            el('text', { x: mx(th), y: ML.t + PH + 20, class: 'tick', 'text-anchor': 'middle' }, svg,
+               Math.abs(th - Math.round(th)) < EPS ? String(Math.round(th)) : th.toFixed(thDec));
+        }
+        const step = niceStep(Y1 - Y0);
+        const dec = Math.abs(step * 10 - Math.round(step * 10)) < 1e-9 ? 1 : 2;
+        for (let k = Math.ceil(Y0 / step - EPS); k * step <= Y1 + EPS; k++) {
+            const d = k * step, yy = my(d);
+            el('line', { x1: x0 - 5, x2: x0, y1: yy, y2: yy, stroke: 'var(--olive-dark)' }, svg);
+            el('text', { x: x0 - 9, y: yy + 4, class: 'tick', 'text-anchor': 'end' }, svg, fmt(d, dec));
+        }
+        el('text', { x: x0 + PW / 2, y: MH - 8, class: 'lbl', 'text-anchor': 'middle', 'font-style': 'italic',
+                     'font-size': 17 }, svg, 'θ');
+        el('text', { x: 14, y: ML.t + PH / 2 + 5, class: 'lbl', 'text-anchor': 'middle', 'font-style': 'italic',
+                     'font-size': 17 }, svg, 'Δ');
+    }
+
+    // ---------- the legend ----------
+    function setRow(id, key) {
+        const row = $(id);
+        const runs = st.vA + st.vB > 0 ? support(key) : [];
+        row.classList.toggle('is-empty', runs.length === 0);
+        row.querySelector('.where').innerHTML = runs.length === 0
+            ? 'empty for these values'
+            : 'for <i class="m">θ</i> in ' + runs.map((r) => `[${fmt(r[0])}, ${fmt(r[1])}]`).join(' and ');
+    }
+    function drawLegend() {
+        setRow('rowBlue', 'blue');
+        setRow('rowGreen', 'green');
+        setRow('rowRed', 'red');
+        setRow('rowNone', 'none');
+    }
+
+    // ---------- wiring ----------
+    function update() {
+        $('thMax').value = st.thMax;
+        $('thMaxOut').textContent = Number(st.thMax).toFixed(1);
+        setDomain();
+        $('vA').value = st.vA; $('vB').value = st.vB;
+        $('vAOut').textContent = Number(st.vA).toFixed(2);
+        $('vBOut').textContent = Number(st.vB).toFixed(2);
+        drawMap();
+        drawLegend();
+    }
+    $('vA').addEventListener('input', (e) => { st.vA = Number(e.target.value); update(); });
+    $('vB').addEventListener('input', (e) => { st.vB = Number(e.target.value); update(); });
+    $('thMax').addEventListener('input', (e) => { st.thMax = Number(e.target.value); update(); });
+    $('reset').addEventListener('click', () => {
+        st.vA = PAPER.vA; st.vB = PAPER.vB; st.thMax = PAPER.thMax; update();
+    });
+
+    update();
+
+    const map = $('map');
+    let lastW = Math.round(map.getBoundingClientRect().width);
+    new ResizeObserver(() => {
+        const w = Math.round(map.getBoundingClientRect().width);
+        if (w && Math.abs(w - lastW) > 2) { lastW = w; drawMap(); }
+    }).observe(map);
+
+    document.addEventListener('DOMContentLoaded', () => {
+        if (typeof renderMathInElement === 'function') {
+            renderMathInElement(document.querySelector('.defs'), {
+                delimiters: [{ left: '$$', right: '$$', display: true },
+                             { left: '\\(', right: '\\)', display: false }],
+            });
+        }
+    });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tortoise explainers</title>
+<meta name="description" content="Pedagogical companions to the Tortoise project on the two-round contest: one page per result or object of the model.">
+<link rel="stylesheet" href="budget-barrier/vendor/katex/katex.min.css">
+<script defer src="budget-barrier/vendor/katex/katex.min.js"></script>
+<script defer src="budget-barrier/vendor/katex/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'$',right:'$',display:false},{left:'\\(',right:'\\)',display:false}],throwOnError:false})"></script>
+<style>
+/* Same paper as the explainers: cream ground, graphite ink, one serif. */
+:root {
+  --paper: #f7f4ec; --paper-deep: #efeadc;
+  --ink: #1c1a17; --ink-mid: #4a4640; --ink-soft: #7b756c; --ink-faint: #b9b2a5;
+  --rule: 1px solid #d9d2c2; --accent: #6b4a2b;
+  --font: Georgia, "Iowan Old Style", "Times New Roman", serif;
+  --measure: min(68ch, 100%);
+}
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; background: var(--paper); color: var(--ink); font-family: var(--font);
+  font-size: 17px; line-height: 1.7; -webkit-font-smoothing: antialiased; }
+@media (max-width: 30rem) { body { font-size: 15.5px; } }
+.wrap { width: 100%; max-width: min(74rem, 100%); margin: 0 auto; padding: 0 16px; }
+@media (min-width: 62rem) { .wrap { padding: 0 3rem; } .col { margin-left: 6rem; } }
+.col { max-width: var(--measure); }
+.hero { padding: 4.5rem 0 2.6rem; border-bottom: var(--rule); }
+.kicker { font-size: 0.78rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-soft); margin: 0 0 1.8rem; }
+h1 { font-weight: normal; font-size: clamp(1.7rem, 5.4vw, 3rem); line-height: 1.15; letter-spacing: -0.02em; margin: 0 0 1.2rem; }
+.standfirst { font-size: 1.05rem; color: var(--ink-mid); max-width: 60ch; margin: 0; }
+ol.entries { list-style: none; margin: 0; padding: 0; }
+.entry { padding: 2.4rem 0 2rem; border-bottom: var(--rule); }
+.entry .meta { font-size: 0.78rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-soft); margin: 0 0 0.7rem; }
+.entry .meta span { color: var(--accent); }
+.entry h2 { font-weight: normal; font-size: clamp(1.25rem, 3.2vw, 1.75rem); line-height: 1.25; margin: 0 0 0.9rem; max-width: 40ch; }
+.entry h2 a { color: var(--ink); text-decoration: none; }
+.entry h2 a:hover, .go a:hover { text-decoration: underline; }
+.blurb { color: var(--ink-mid); margin: 0 0 0.8rem; max-width: var(--measure); }
+.go { margin: 0; font-size: 0.95rem; }
+.go a { color: var(--accent); text-decoration: none; }
+.katex { font-size: 1.05em; }
+footer { padding: 2.4rem 0 3.5rem; font-size: 0.85rem; color: var(--ink-soft); }
+footer a { color: var(--ink-soft); }
+</style>
+</head>
+<body>
+<header class="hero"><div class="wrap"><div class="col">
+  <p class="kicker">Tortoise · pedagogical companions</p>
+  <h1>Explainers</h1>
+  <p class="standfirst">Companions to the Tortoise project on the two-round contest. Each page takes one result or one object of the model and works through it from the definitions.</p>
+</div></div></header>
+<main><div class="wrap"><div class="col">
+<ol class="entries">
+  <li class="entry">
+    <p class="meta"><span>module 17</span> · updated <time datetime="2026-10-12">12 October 2026</time></p>
+    <h2><a href="budget-barrier/">The chain runs out of probability</a></h2>
+    <p class="blurb">Off the surface $f = 0$ the comb chain $\sigma(1,1) \to \sigma(1,2) \to \sigma(2,2) \to \cdots$ cannot go on forever: each new atom costs probability, and each player has one unit to spend. This page explains why, for every cost whose curvature is positive and of bounded variation on the efforts up to the larger reach, the spending must overrun at a depth one can write down, with no single-crossing assumption; and how, once single crossing is assumed on the reachable dials, the march at the floor dial alone fixes the cutoff.</p>
+    <p class="go"><a href="budget-barrier/" aria-label="Read: The chain runs out of probability">Read →</a></p>
+  </li>
+
+  <li class="entry">
+    <p class="meta"><span>module 0</span> · updated <time datetime="2026-10-12">12 October 2026</time></p>
+    <h2><a href="cubic-single-crossing/">Single crossing, and why deeper equilibria pay the leader less</a></h2>
+    <p class="blurb">The two-round contest has a ladder of equilibria, one rung for each depth of mixing. The claim is that the leader’s rent falls as you climb. This page explains what that means, why it reduces to a property of one family of curves, and how the proof goes through at the pure cubic cost, where every step can be written down.</p>
+    <p class="go"><a href="cubic-single-crossing/" aria-label="Read: Single crossing at the cubic">Read →</a></p>
+  </li>
+
+  <li class="entry">
+    <p class="meta"><span>module 0</span> · updated <time datetime="2026-10-11">11 October 2026</time></p>
+    <h2><a href="small-curvature-drop/">Marginal cost that steepens, but steadily</a></h2>
+    <p class="blurb">The symmetric single-crossing proposition of 2026-10-11 is proved on a region of costs cut out by one number. This page reads that number in the language of marginal cost, shows where it does its work in the proof, explains why for every cost outside the polynomial cone it is a condition on the prize, and lists which of the usual cost families satisfy it.</p>
+    <p class="go"><a href="small-curvature-drop/" aria-label="Read: Marginal cost that steepens steadily">Read →</a></p>
+  </li>
+
+  <li class="entry">
+    <p class="meta">updated <time datetime="2026-10-08">7 October 2026</time></p>
+    <h2><a href="collusive-equilibria/">Collusive equilibria with power costs</a></h2>
+    <p class="blurb">In a collusive equilibrium one player builds a lead in the penultimate round while the other rests. With effort costs <i class="m">c</i>(<i class="m">e</i>) = <i class="m">e</i><sup><i class="m">θ</i></sup>, the map shows, for each exponent <i class="m">θ</i> from 1 up to a bound you choose and each head start <i class="m">Δ</i> of player A, which player can be the one who leads. Change the values to see regions shrink or vanish.</p>
+    <p class="go"><a href="collusive-equilibria/" aria-label="Read: Collusive Equilibria">Read →</a></p>
+  </li>
+
+  <li class="entry">
+    <p class="meta"><span>the penultimate round</span> · updated <time datetime="2026-10-05">5 October 2026</time></p>
+    <h2><a href="round-invariances/">What the penultimate round cannot see</a></h2>
+    <p class="blurb">Four primitives go in: two prizes, a head start, one cost function. Which changes to them leave the round’s mixed Nash set exactly where it was? Two do so on the nose, two more move it by a relabelling, and a short argument shows there is nothing else at the level of payoffs. The rest of the page spends the slack: new charts, a cost with a discrete zoom symmetry, prizes that turn out to be costs, a convexity dividend inside which the linear part of the cost disappears, and a region where the Nash set forgets almost everything it was given.</p>
+    <p class="go"><a href="round-invariances/" aria-label="Read: What the round cannot see">Read →</a></p>
+  </li>
+
+  <li class="entry">
+    <p class="meta"><span>module 13</span> · updated <time datetime="2026-10-03">3 October 2026</time></p>
+    <h2><a href="reach-pratt/">Risk aversion, measured in reach units</a></h2>
+    <p class="blurb">Comparative statics in the cost function need an order on costs. The natural candidate is Arrow–Pratt’s, with the cost in the role of the utility. Taken raw it fails on the symmetric contest, and it fails for a reason the risk-aversion literature worked out fifty years ago: the coefficient has units, and the comparison has to be made relative to the stake. This page states the normalized order, shows what it buys, and places each step beside the paper that first made it.</p>
+    <p class="go"><a href="reach-pratt/" aria-label="Read: Risk aversion in reach units">Read →</a></p>
+  </li>
+
+  <li class="entry">
+    <p class="meta"><span>A companion to the paper's §4.2</span> · updated <time datetime="2026-09-18">17 September 2026</time></p>
+    <h2><a href="competitive-pole/">The competitive equilibrium, and the ladder that reaches&nbsp;it.</a></h2>
+    <p class="blurb">The penultimate round of the contest has many equilibria. At one end sits tacit collusion; at the other, a single distribution under which both contestants earn nothing at all. The paper writes that far one down in closed form for integer power costs. This note explains what it is, shows the one equation it solves for any convex cost, shows exactly why the closed form exists only at integer powers, and works out the sense in which the ranked equilibria in between converge to it.</p>
+    <p class="go"><a href="competitive-pole/" aria-label="Read: The Competitive Equilibrium">Read →</a></p>
+  </li>
+</ol>
+</div></div></main>
+<footer><div class="wrap"><div class="col">
+  <p>7 explainers · <a href="https://soparreiras.org/">soparreiras.org</a></p>
+</div></div></footer>
+</body>
+</html>
