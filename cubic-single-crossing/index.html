@@ -361,33 +361,41 @@ footer { padding: 3rem 0 4rem; border-top: var(--rule); color: var(--ink-soft); 
  <p>Since $\Phi(z + \eta) = -B\,F(\eta)$ and $\Phi_y(z + \eta) = -B\,F_\eta(\eta),$ dividing by $B$ leaves $\beta\,[c(w) - c(m)] = F(s)$ and $\beta\,c'(m) = F_\eta(s).$ Divide one by the other and the share drops out; what remains is the ratio $\psi := F/F_\eta,$ which we call the <em>contact price</em>. These are the <em>contact equations</em>:</p>
  $$
  \begin{align*}
-  \frac{c(w) - c(m)}{c'(m)} &= \psi(s), \tag{CT1}\\
+  \psi(s) &= \frac{c(w) - c(m)}{c'(m)}, \tag{CT1}\\
   \beta &= \frac{F_\eta(s)}{c'(m)} . \tag{CT2}
  \end{align*}
  $$
  <p>Two equations in the two unknowns, $s$ and $\beta,$ since $d - z$ is given and the margin is $m = d - z - s.$ Read the first as an accounting identity for the prize, $c(w) = c(m) + \psi(s)\,c'(m)$⁠: the whole prize is spent on the margin and on the contact price, charged at the marginal cost of the margin. These identities use the two tangencies and nothing else; in particular no derivative of any mass has been taken.</p>
 
  <h3>7.3 Moving the dial</h3>
- <p>Everything is now a function of $t,$ and this subsection finds when the share rises with it. Write $\rho := d' - z'$ for the <em>incoming difference</em>, the rate at which the new atom pulls away from the old contact, so that $m' = \rho - s'.$ A subscript $t$ is a derivative along the dial at a fixed step, as in $\psi_t := \partial\psi/\partial t$ at fixed $\eta.$ Differentiate the first contact equation (CT1) with respect to the dial $t.$ The reach is fixed, and by the equation itself the left side has $m$-derivative</p>
+ <p>Everything is now a function of $t,$ and this subsection finds when the share rises with it. Write $\rho := d' - z'$ for the <em>incoming difference</em>, the rate at which the new atom pulls away from the old contact, so that $m' = \rho - s'.$ A subscript $t$ is a derivative along the dial at a fixed step, as in $\psi_t := \partial\psi/\partial t$ at fixed $\eta.$ Differentiate the first contact equation (CT1) with respect to the dial $t.$ The reach is fixed, and by the equation itself the right side has $m$-derivative</p>
  $$
  \frac{d}{dm}\,\frac{c(w) - c(m)}{c'(m)} = -1 - \frac{c(w) - c(m)}{c'(m)}\,\frac{c''(m)}{c'(m)},
- \qquad\text{and define}\qquad
+ \quad\text{and define}\quad
  \lambda := 1 + \psi(s)\,\frac{c''(m)}{c'(m)} .
  $$
- <p>So $-\lambda\,m' = \psi_\eta\,s' + \psi_t,$ and substituting $m' = \rho - s'$⁠:</p>
+ <p>The total derivative of (CT1) with respect to $t$ is $\psi_\eta\,s' + \psi_t = -\lambda\,m',$ and substituting $m' = \rho - s'$⁠:</p>
  $$
- s' = \frac{\lambda\,\rho + \psi_t}{\lambda - \psi_\eta},
- \qquad
+ s' = \frac{\lambda\,\rho + \psi_t}{\lambda - \psi_\eta}
+ \quad\Longrightarrow\quad
  s' - \rho = \frac{\psi_\eta\,\rho + \psi_t}{\lambda - \psi_\eta} .
  $$
- <div class="box"><span class="tag">the one-step conclusion</span>
+ <div class="box"><span class="tag">the outrun</span>
  If the incoming difference is positive, $\rho > 0,$ and at the step the contact price has ${0 \lt \psi_\eta \lt \lambda}$ and $\psi_t \ge 0,$ then $s' > \rho > 0$ and $m' \lt 0.$ Since $(z + s)' - d' = s' - \rho,$ <em>the new contact outruns the atom that created it, and the margin closes.</em>
  </div>
+ <p><strong>What the four conditions say.</strong> A visit receives two teeth already placed, the new atom $d$ and the old contact $z,$ and splits the room between them into a step and a margin, $d - z = s + m.$ The incoming difference $\rho = d' - z'$ is the rate at which that room grows as the dial rises.</p>
+ <p>$\rho > 0$ says that the room grows: of the two teeth, the higher one climbs faster. In the comb, when the underdog concedes a little more, neighbouring efforts move apart, the higher one faster. It is not assumed afresh at each visit. As shown below, each visit’s outrun hands it to the next, and the first visit has $\rho = x_1' > 0$ from §4.</p>
+ <p>The other three conditions concern the contact price, and (CT1) gives it an economic reading: $\psi(s) = [c(w) - c(m)]/c'(m)$ is the prize left after paying for the margin, converted into effort at the margin’s marginal cost. Since $(\log F)_\eta = F_\eta/F,$ it is also $\psi = 1/(\log F)_\eta,$ the reciprocal of the shortfall’s proportional growth rate.</p>
+ <p>$\psi_\eta > 0$ says that a longer step carries a higher price. Differentiating $\psi = 1/(\log F)_\eta$ gives $\psi_\eta = -(\log F)_{\eta\eta}/(\log F)_\eta^2,$ so the condition says exactly that $\log F$ is concave at the step. A shortfall that leaves its level like a power, $F = a\,\eta^k,$ has $\psi = \eta/k$ and $\psi_\eta = 1/k;$ a double contact starts out at least quadratic, $k \ge 2,$ so just past the contact $\psi_\eta$ is close to $1/k \le \tfrac12.$ The condition fails only where the shortfall is locally log-convex, as an exponential is.</p>
+ <p>$\psi_\eta \lt \lambda$ makes the step well defined. Read (CT1) as an equation for $s$ at a given room $d - z.$ Its left side, the price, rises with $s$ at rate $\psi_\eta.$ Its right side depends on $s$ only through the margin $m = d - z - s,$ and by the display above it rises at rate $\lambda$ as the margin shrinks. So $\psi_\eta \lt \lambda$ says the right side overtakes the left: the step is a transversal crossing and moves smoothly with the dial, and $\lambda - \psi_\eta$ is the denominator of $s'.$ The condition is mild. Convexity of $c$ and $\psi > 0$ give $\lambda > 1,$ and the quotient rule gives $\psi_\eta = 1 - F F_{\eta\eta}/F_\eta^2,$ which is at most $1$ wherever the shortfall is convex.</p>
+ <p>$\psi_t \ge 0$ concerns the prefix. At a fixed distance past the contact, raising the dial changes the hump only through the atoms already placed and their masses; the condition says that this does not lower the price. For the cubic, §7.4 shows that it is the statement that the state $R$ does not fall, which (CR-5) carries from visit to visit.</p>
+ <p><strong>Why the step outruns.</strong> The room grows at rate $\rho;$ the question is which of the step and the margin takes the growth. If the margin kept its size, the step would grow at rate $\rho$ and the price at rate $\psi_\eta\,\rho + \psi_t > 0,$ while the right side of (CT1), which depends on the margin alone, would not move. Balance returns only if the margin shrinks. That raises the right side at rate $\lambda$ and, by lengthening the step, the price at rate $\psi_\eta,$ a net gain of $\lambda - \psi_\eta > 0.$ Hence $m' = -(\psi_\eta\,\rho + \psi_t)/(\lambda - \psi_\eta) \lt 0,$ and the step takes more than all of the new room. Economically, the rival’s next atom runs ahead of the atom that created it.</p>
+ <p><strong>What it delivers.</strong> The next visit, to the other side, receives the new contact $z + s$ as its atom and $d$ as its old contact, so its incoming difference is $s' - \rho > 0$⁠: the outrun reproduces its own hypothesis $\rho > 0$ one tooth up. And the margin closes, $m' \lt 0,$ which, with two signs on the shortfall, makes the share rise (below). At the closing $\beta = 1,$ and (CR-7) turns $\beta' > 0$ into $G' > 0$⁠: single crossing.</p>
  <p>The share follows. Differentiate the second contact equation (CT2):</p>
  $$
  \beta' = \frac{F_{\eta\eta}(s)\,s' + F_{\eta t}(s)}{c'(m)} - \beta\,\frac{c''(m)}{c'(m)}\,m' .
  $$
- <p>Under the one-step conclusion the last term is positive, since $\beta > 0$ and $m' \lt 0,$ so $\beta' > 0$ as soon as $F_{\eta\eta}(s) \ge 0$ and $F_{\eta t}(s) \ge 0.$ The sign of $\beta'$ is <em>derived</em>, from the rates of the contact and the margin. It is not a hypothesis on a mass drift, which is exactly what the rules forbade; this is the point at which the proof pays its own way rather than borrowing from widening.</p>
+ <p>Under the outrun, the last term is positive, since $\beta > 0$ and $m' \lt 0,$ so $\beta' > 0$ as soon as $F_{\eta\eta}(s) \ge 0$ and $F_{\eta t}(s) \ge 0.$ The sign of $\beta'$ is <em>derived</em>, from the rates of the contact and the margin. It is not a hypothesis on a mass drift, which is exactly what the rules forbade; this is the point at which the proof pays its own way rather than borrowing from widening.</p>
 
  <h3>7.4 What the cubic supplies</h3>
  <p>Now take $c(e) = e^3.$ The cubic meets every sign condition that 7.3 puts on the contact price and the shortfall, and it turns the two that involve the dial, $\psi_t \ge 0$ and $F_{\eta t} \ge 0,$ into one condition on one number. Expand the hump: since $-(d_j - y)^3 = (y - d_j)^3 = y^3 - 3d_j y^2 + \cdots,$</p>
