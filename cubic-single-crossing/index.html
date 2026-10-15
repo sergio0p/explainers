@@ -204,7 +204,7 @@ footer { padding: 3rem 0 4rem; border-top: var(--rule); color: var(--ink-soft); 
   \sum_{k \le n_1} p_k(t) - 1, & \text{rectangles } \sigma(n_1,n_1+1).
  \end{cases}
  $$
- <p>The non-apex player’s masses must sum to one. A candidate equilibrium at this depth is a zero of $G.$ Read $G$ as a <em>budget</em>: negative means the recursion has not yet spent that player’s probability, so the comb could grow another tooth; zero means exactly spent; positive means over-spent, and the rung is infeasible at that dial.</p>
+ <p>The non-apex player’s masses must sum to one. A candidate equilibrium at this depth is a zero of $G.$ Read $G$ as a <em>budget</em>: negative means the recursion has not yet spent that player’s probability, so the comb could grow another atom; zero means exactly spent; positive means over-spent, and the rung is infeasible at that dial.</p>
 </div></section>
 
 <!-- ================================================================== -->
@@ -216,11 +216,11 @@ footer { padding: 3rem 0 4rem; border-top: var(--rule); color: var(--ink-soft); 
  \sigma(1,1) \to \sigma(1,2) \to \sigma(2,2) \to \sigma(2,3) \to \sigma(3,3) \to \cdots
  \qquad G_1,\, G_2,\, G_3,\, G_4,\, G_5,\, \ldots
  $$
- <p>and note that all the residuals live on the same recursion: $G_{j+1}$ is what the march says after one more tooth than $G_j.$ The first is explicit, $G_1(t) = t - 1.$ Rung $j$ can only be <em>reached</em> where every shallower rung has budget to spare,</p>
+ <p>and note that all the residuals live on the same recursion: $G_{j+1}$ is what the march says after one more atom than $G_j.$ The first is explicit, $G_1(t) = t - 1.$ Rung $j$ can only be <em>reached</em> where every shallower rung has budget to spare,</p>
  $$
  U_j := \{\, t : G_i(t) \lt 0 \ \text{ for all } i \lt j \,\},
  $$
- <p>because the recursion needs each earlier player’s probability not yet exhausted in order to place the next tooth. A zero of $G_j$ on $U_j$ is a comb of rung $j;$ it is a Nash equilibrium exactly when three inequalities hold:</p>
+ <p>because the recursion needs each earlier player’s probability not yet exhausted in order to place the next atom. A zero of $G_j$ on $U_j$ is a comb of rung $j;$ it is a Nash equilibrium exactly when three inequalities hold:</p>
  $$
  \begin{align*}
   G_{j-1}(t^\ast) &\le 0 &&\text{(NN)}\quad\text{the apex mass } {-G_{j-1}} \text{ is nonnegative,}\\
@@ -228,7 +228,7 @@ footer { padding: 3rem 0 4rem; border-top: var(--rule); color: var(--ink-soft); 
   G_{j+1}(t^\ast) &\ge 0 &&\text{(NJ)}\quad\text{the non-apex player cannot profitably jump above the top.}
  \end{align*}
  $$
- <p>together with positive interior masses and $u_1 \ge 0.$ The third line is the one that distinguishes a comb from an equilibrium. Indifference on one’s own support rules out every deviation <em>below</em> the top of the combined support; what it cannot rule out is an overshoot strictly above it, a fresh concave hump carrying no own atom. It turns out that this overshoot is unprofitable precisely when the <em>successor</em> residual is nonnegative: the march would place the next tooth with nonpositive budget, so there is no room for it. That is why the whole Nash layer is a sign pattern on one family of curves.</p>
+ <p>together with positive interior masses and $u_1 \ge 0.$ The third line is the one that distinguishes a comb from an equilibrium. Indifference on one’s own support rules out every deviation <em>below</em> the top of the combined support; what it cannot rule out is an overshoot strictly above it, a fresh concave hump carrying no own atom. It turns out that this overshoot is unprofitable precisely when the <em>successor</em> residual is nonnegative: the march would place the next atom with nonpositive budget, so there is no room for it. That is why the whole Nash layer is a sign pattern on one family of curves.</p>
 
  <div class="aside"><span class="tag">a consequence worth pausing on</span>
  The no-profitable-jump (NJ) is what truncates the chain from below. For a pure power $c = e^\theta$ at symmetric primitives, $\sigma(1,1)$ is an equilibrium only when $2c(\tfrac34 w) \ge c(w),$ that is $\theta \le \ln 2/\ln\tfrac43 \approx 2.409.$ More convexity kills the shallow rungs; at the cubic the live chain starts at $\sigma(3,3).$ The surviving rungs form a suffix $\{n_1 \ge n_1^\ast\},$ and chain monotonicity is the statement that along them the leader’s rent strictly decreases between all distinct equilibria, and so the first of them $n_1^\ast$ is the rent-maximal equilibrium.
@@ -246,7 +246,7 @@ footer { padding: 3rem 0 4rem; border-top: var(--rule); color: var(--ink-soft); 
 <section class="chapter" id="monotone"><div class="col">
  <h2><span class="secno">§ 4</span>Chain monotonicity, and its reduction</h2>
 
- <p><strong>The claim.</strong> Along the chain, player 1’s equilibrium rent $u_1^\ast$ strictly decreases between all distinct Nash profiles. Deeper rungs pay the leader less. Economically: the finer the mixing, the more of the leader’s advantage is competed away. A rung with more teeth is a more contested game.</p>
+ <p><strong>The claim.</strong> Along the chain, player 1’s equilibrium rent $u_1^\ast$ strictly decreases between all distinct Nash profiles. Deeper rungs pay the leader less. Economically: the finer the mixing, the more of the leader’s advantage is competed away. A rung with more atoms is a more contested game.</p>
 
  <h3>Step one: rent rises with the dial</h3>
  <p>Along the march, at any cost, the rent is a function of the dial alone, $u_1(t) = t\,[v_1 - c(m_0)] - c(x_1)$ with $m_0 = w_1 + f - x_1(t),$ the margin player 1 still has to make up in round two when the underdog sits out. The bracket is what that round is worth to her, and individual rationality signs it: $u_1 \ge 0$ gives $t\,[v_1 - c(m_0)] \ge c(x_1) > 0,$ so the bracket is positive on the admissible window. Differentiate. The base equation is exactly the statement that $x_1$ is stationary, so by the envelope argument the $x_1'$ terms cancel:</p>
@@ -279,7 +279,7 @@ footer { padding: 3rem 0 4rem; border-top: var(--rule); color: var(--ink-soft); 
 <section class="chapter" id="why-sc"><div class="col">
  <h2><span class="secno">§ 5</span>Why single crossing, and not widening</h2>
 
- <p>The cubic was already known to satisfy chain monotonicity, by a machine-verified proof of a much stronger property: <em>mass widening</em>. A <em>mass drift</em> is the derivative of a mass with respect to the dial, $p_k'$ or $q_\ell',$ and a <em>gap drift</em> is the derivative of the distance between two neighbouring teeth, $(x_k - \tilde y_k)'$ or $(\tilde y_{k+1} - x_k)'.$ Mass widening is the statement that no mass drift is negative: raising the dial never takes probability away from a tooth. The proof gives more: along the march every mass drift and every gap drift is nonnegative, at every node, at every dial on the window, and single crossing follows. The trouble is that widening is false on the general class $X$ of costs with $c', c'', c''' > 0$ (already the polynomial $e^2 + e^{12}$ has a falling mass at a legal dial), so nothing in that proof ports.</p>
+ <p>The cubic was already known to satisfy chain monotonicity, by a machine-verified proof of a much stronger property: <em>mass widening</em>. A <em>mass drift</em> is the derivative of a mass with respect to the dial, $p_k'$ or $q_\ell',$ and a <em>gap drift</em> is the derivative of the distance between two neighbouring atoms, $(x_k - \tilde y_k)'$ or $(\tilde y_{k+1} - x_k)'.$ Mass widening is the statement that no mass drift is negative: raising the dial never takes probability away from an atom. The proof gives more: along the march every mass drift and every gap drift is nonnegative, at every node, at every dial on the window, and single crossing follows. The trouble is that widening is false on the general class $X$ of costs with $c', c'', c''' > 0$ (already the polynomial $e^2 + e^{12}$ has a falling mass at a legal dial), so nothing in that proof ports.</p>
  <p>Single crossing is the weaker, $k$-free hypothesis that the reduction of §4 actually consumes, and it is a shape of statement that may survive on a larger class of cost functions: a statement about the <em>sum</em> of the drifts at a <em>zero</em>, not about each drift everywhere. On $X$ itself, single crossing fails at a knee-shaped cost at $f = 0,$ and the theorem as stated fails at another knee cost at $f > 0.$ So the pure cubic is the <em>ground test</em> of the mechanism: the case with no knees, $c''' \equiv 6$ and $c'''' \equiv 0,$ where every coefficient is explicit and where the question is not whether single crossing holds, but whether it can be <em>proved from the objects that exist at a closing</em>. If it can, the proof’s ledger says which cubic facts each step used, and hence what a general class must supply.</p>
  <p>The rule of the game, then: no drift sign may be assumed; nothing from the widening proof may be cited; the target is the sign of $G_j'$ at zeros, and only there.</p>
 </div></section>
@@ -288,25 +288,25 @@ footer { padding: 3rem 0 4rem; border-top: var(--rule); color: var(--ink-soft); 
 <section class="chapter" id="closing"><div class="col">
  <h2><span class="secno">§ 6</span>The closing identity, and the theorem</h2>
 
- <p>Call the non-apex player’s side the <em>closing side</em>: its masses, the $q_\ell$ on a square and the $p_k$ on a rectangle, are the ones that must sum to one. Write $\mu_1, \ldots, \mu_i$ for the masses of its teeth below the last one, and $\mu_{\rm new}$ for the mass of the last. The probability the closing side has left before its last tooth is its <em>unused budget</em> $B,$ and the last tooth takes a <em>share</em> $\beta$ of it:</p>
+ <p>Call the non-apex player’s side the <em>closing side</em>: its masses, the $q_\ell$ on a square and the $p_k$ on a rectangle, are the ones that must sum to one. Write $\mu_1, \ldots, \mu_i$ for the masses of its atoms below the last one, and $\mu_{\rm new}$ for the mass of the last. The probability the closing side has left before its last atom is its <em>unused budget</em> $B,$ and the last atom takes a <em>share</em> $\beta$ of it:</p>
  $$
  B := 1 - \sum_{j \le i} \mu_j ,
  \qquad
  \beta := \frac{\mu_{\rm new}}{B} .
  $$
- <p>What is left after the last tooth follows by subtraction,</p>
+ <p>What is left after the last atom follows by subtraction,</p>
  $$
  B_{\rm new} := 1 - \sum_{j \le i} \mu_j - \mu_{\rm new} = B - \beta\,B = B\,(1 - \beta),
  $$
  <p>and it holds at every dial, not only at a closing, because it is the definition of $\beta$ rearranged. What is left is also the closing residual of §2 with its sign flipped, $G = \sum_{j \le i} \mu_j + \mu_{\rm new} - 1 = -B_{\rm new}.$</p>
- <p>A rung closes when the last tooth takes <em>all</em> of the remaining budget: $\beta = 1$ at the terminal contact. That is what $G = 0$ means, and it gives the derivative of the residual for free. Differentiate $B_{\rm new} = B\,(1 - \beta)$ <em>first</em>, and impose $\beta = 1$ <em>afterwards</em>:</p>
+ <p>A rung closes when the last atom takes <em>all</em> of the remaining budget: $\beta = 1.$ That is what $G = 0$ means, and it gives the derivative of the residual for free. Differentiate $B_{\rm new} = B\,(1 - \beta)$ <em>first</em>, and impose $\beta = 1$ <em>afterwards</em>:</p>
  $$
  \begin{align*}
   G' &= -B_{\rm new}' = B\,\beta' - (1 - \beta)\,B' \bigr|_{\beta = 1} = B\,\beta' \;>\; 0 .
   \tag{CR-7}
  \end{align*}
  $$
- <p>Here $\beta' > 0$ follows from (CR-5) in §7, and $B > 0$ because the dial lies in the reachable set $U_j$ of §3: before its last tooth the closing side still has budget to spare, $B = -G_{j-2} > 0;$ on the first two rungs no tooth precedes the last, and $B = 1.$ The rate at which the last share fills is positive: the rung closes transversally, from deficit to surplus. That is single crossing at this closing, Nash or not.</p>
+ <p>Here $\beta' > 0$ follows from (CR-5) in §7, and $B > 0$ because the dial lies in the reachable set $U_j$ of §3: before its last atom the closing side still has budget to spare, $B = -G_{j-2} > 0;$ on the first two rungs no atom precedes the last, and $B = 1.$ The rate at which the last share fills is positive: the rung closes transversally, from deficit to surplus. That is single crossing at this closing, Nash or not.</p>
 
  <div class="box"><span class="tag">Theorem · pure cubic single crossing and chain order at $f \ge 0$ (<span class="lab">thm:cubic-chain-sc</span>)</span>
  Let $c(e) = e^3,$ primitives competitive, $f \ge 0,$ in the ordered $u_2 = 0$ march. At every legal closing of either family, of arbitrary finite depth, the closing residual has positive derivative in $t = q_1.$ Hence every zero on its reachable set is an up-crossing, including non-Nash zeros, and along the live finite-comb chain every Nash dial and rent of a distinct deeper profile lies strictly below every Nash dial and rent of a shallower profile. A zero apex is merged with its predecessor’s identical profile; a feasible IR-floor profile is included.
@@ -328,7 +328,7 @@ footer { padding: 3rem 0 4rem; border-top: var(--rule); color: var(--ink-soft); 
  <p>At $f \ge 0$ every margin that appears is strictly positive, so the raw cost and the zero-extended cost agree wherever the march evaluates them: this is the one place the sign of the lead enters, and it is where a negative lead would force a saturation remainder into every formula below.</p>
 
  <h3>7.1 The hump, and its double contact</h3>
- <p>The first step compresses everything the placed atoms do to the rival into one function of one variable. Take a <em>prefix</em>: the atoms placed so far on a side, masses $\mu_1, \ldots, \mu_i$ at $d_1, \ldots, d_i,$ and the contact $z = z_i.$ The rival’s payoff from an own effort $y,$ less her level, is the <em>hump</em></p>
+ <p>The first step compresses everything the placed atoms do to the rival into one function of one variable. Take a <em>prefix</em>: the atoms placed so far on a side, masses $\mu_1, \ldots, \mu_i$ at $d_1, \ldots, d_i,$ and the contact $z = z_i.$ A contact is an atom of the rival, seen from this side. The rival’s payoff from an own effort $y,$ less her level, is the <em>hump</em></p>
  $$
  \Phi(y) := \sum_{j \le i} \mu_j\bigl[c(w) - c(d_j - y)\bigr] - c(y) - u .
  $$
@@ -383,14 +383,14 @@ footer { padding: 3rem 0 4rem; border-top: var(--rule); color: var(--ink-soft); 
  <div class="box"><span class="tag">the outrun</span>
  If the incoming difference is positive, $\rho > 0,$ and at the step the contact price has ${0 \lt \psi_\eta \lt \lambda}$ and $\psi_t \ge 0,$ then $s' > \rho > 0$ and $m' \lt 0.$ Since $(z + s)' - d' = s' - \rho,$ <em>the new contact outruns the atom that created it, and the margin closes.</em>
  </div>
- <p><strong>What the four conditions say.</strong> A visit receives two teeth already placed, the new atom $d$ and the old contact $z,$ and splits the room between them into a step and a margin, $d - z = s + m.$ The incoming difference $\rho = d' - z'$ is the rate at which that room grows as the dial rises.</p>
- <p>$\rho > 0$ says that the room grows: of the two teeth, the higher one climbs faster. In the comb, when the underdog concedes a little more, neighbouring efforts move apart, the higher one faster. It is not assumed afresh at each visit. As shown below, each visit’s outrun hands it to the next, and the first visit has $\rho = x_1' > 0$ from §4.</p>
+ <p><strong>What the four conditions say.</strong> A visit receives two points already placed, the new atom $d$ and the old contact $z,$ and splits the room between them into a step and a margin, $d - z = s + m.$ The incoming difference $\rho = d' - z'$ is the rate at which that room grows as the dial rises.</p>
+ <p>$\rho > 0$ says that the room grows: of the two points, the higher one climbs faster. In the comb, when the underdog concedes a little more, neighbouring efforts move apart, the higher one faster. It is not assumed afresh at each visit. As shown below, each visit’s outrun hands it to the next, and the first visit has $\rho = x_1' > 0$ from §4.</p>
  <p>The other three conditions concern the contact price, and (CT1) gives it an economic reading: $\psi(s) = [c(w) - c(m)]/c'(m)$ is the prize left after paying for the margin, converted into effort at the margin’s marginal cost. Since $(\log F)_\eta = F_\eta/F,$ it is also $\psi = 1/(\log F)_\eta,$ the reciprocal of the shortfall’s proportional growth rate.</p>
  <p>$\psi_\eta > 0$ says that a longer step carries a higher price. Differentiating $\psi = 1/(\log F)_\eta$ gives $\psi_\eta = -(\log F)_{\eta\eta}/(\log F)_\eta^2,$ so the condition says exactly that $\log F$ is concave at the step. A shortfall that leaves its level like a power, $F = a\,\eta^k,$ has $\psi = \eta/k$ and $\psi_\eta = 1/k;$ a double contact starts out at least quadratic, $k \ge 2,$ so just past the contact $\psi_\eta$ is close to $1/k \le \tfrac12.$ The condition fails only where the shortfall is locally log-convex, as an exponential is.</p>
  <p>$\psi_\eta \lt \lambda$ makes the step well defined. Read (CT1) as an equation for $s$ at a given room $d - z.$ Its left side, the price, rises with $s$ at rate $\psi_\eta.$ Its right side depends on $s$ only through the margin $m = d - z - s,$ and by the display above it rises at rate $\lambda$ as the margin shrinks. So $\psi_\eta \lt \lambda$ says the right side overtakes the left: the step is a transversal crossing and moves smoothly with the dial, and $\lambda - \psi_\eta$ is the denominator of $s'.$ The condition is mild. Convexity of $c$ and $\psi > 0$ give $\lambda > 1,$ and the quotient rule gives $\psi_\eta = 1 - F F_{\eta\eta}/F_\eta^2,$ which is at most $1$ wherever the shortfall is convex.</p>
  <p>$\psi_t \ge 0$ concerns the prefix. At a fixed distance past the contact, raising the dial changes the hump only through the atoms already placed and their masses; the condition says that this does not lower the price. For the cubic, §7.4 shows that it is the statement that the state $R$ does not fall, which (CR-5) carries from visit to visit.</p>
  <p><strong>Why the step outruns.</strong> The room grows at rate $\rho;$ the question is which of the step and the margin takes the growth. If the margin kept its size, the step would grow at rate $\rho$ and the price at rate $\psi_\eta\,\rho + \psi_t > 0,$ while the right side of (CT1), which depends on the margin alone, would not move. Balance returns only if the margin shrinks. That raises the right side at rate $\lambda$ and, by lengthening the step, the price at rate $\psi_\eta,$ a net gain of $\lambda - \psi_\eta > 0.$ Hence $m' = -(\psi_\eta\,\rho + \psi_t)/(\lambda - \psi_\eta) \lt 0,$ and the step takes more than all of the new room. Economically, the rival’s next atom runs ahead of the atom that created it.</p>
- <p><strong>What it delivers.</strong> The next visit, to the other side, receives the new contact $z + s$ as its atom and $d$ as its old contact, so its incoming difference is $s' - \rho > 0$⁠: the outrun reproduces its own hypothesis $\rho > 0$ one tooth up. And the margin closes, $m' \lt 0,$ which, with two signs on the shortfall, makes the share rise (below). At the closing $\beta = 1,$ and (CR-7) turns $\beta' > 0$ into $G' > 0$⁠: single crossing.</p>
+ <p><strong>What it delivers.</strong> The next visit, to the other side, receives the new contact $z + s$ as its atom and $d$ as its old contact, so its incoming difference is $s' - \rho > 0$⁠: the outrun reproduces its own hypothesis $\rho > 0$ one atom up. And the margin closes, $m' \lt 0,$ which, with two signs on the shortfall, makes the share rise (below). At the closing $\beta = 1,$ and (CR-7) turns $\beta' > 0$ into $G' > 0$⁠: single crossing.</p>
  <p>The share follows. Differentiate the second contact equation (CT2):</p>
  $$
  \beta' = \frac{F_{\eta\eta}(s)\,s' + F_{\eta t}(s)}{c'(m)} - \beta\,\frac{c''(m)}{c'(m)}\,m' .
